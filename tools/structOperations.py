@@ -1,6 +1,7 @@
 from toolkit.global_vars.ext_libs import *
 from toolkit.global_vars.tk_lib_VASP import *
-
+from toolkit.global_vars.tk_lib_SCALEUP import *
+from toolkit.global_vars.tk_lib_XYZ import *
 class structOperations:
     @calculate_time
     def copy_structure_vasp(self, structure):
@@ -28,9 +29,36 @@ class structOperations:
         return new_VASP
 
     @calculate_time
+    def copy_structure_scaleup(self, structure):
+        new_SCUP = SCALEUP()
+        new_SCUP.title = structure.title
+        new_SCUP.B = structure.B
+        new_SCUP.SC = structure.SC
+        new_SCUP.alat = structure.a_lat
+        new_SCUP.nat = structure.nat
+        new_SCUP.names = structure.names
+        new_SCUP.namelist = structure.namelist
+        new_SCUP.nspecies = structure.nspecies
+        new_SCUP.atom_id = structure.atom_id
+        new_SCUP.at_type = structure.at_type
+        new_SCUP.cell_id = structure.cell_id
+        new_SCUP.lattype = structure.lattype
+        new_SCUP.multiplicity = structure.multiplicity
+        new_SCUP.volume = structure.volume
+        new_SCUP.at_frac = structure.at_frac
+        new_SCUP.at_cart = structure.at_cart
+        new_SCUP.type = SCALEUP
+
+        return new_SCUP
+
+    @calculate_time
     def copy_structure(self, structure):
         if structure.type == "VASP":
             new_structure = self.copy_structure_vasp(structure)
+
+        if structure.type == "SCALEUP":
+            new_structure = self.copy_structure_scaleup(structure)
+
         return new_structure 
 
     def lammps_to_xdatcar(self, LAMMPS_structure, output_xdat, namelist=None):
@@ -129,7 +157,7 @@ class structOperations:
         self.type='xyz'
         return xyz_structure
 
-    def vasp_to_spld(self, structure):
+    def vasp_to_scaleup(self, structure):
         pass
     
     def vasp_to_cif(self, structure):
@@ -138,7 +166,7 @@ class structOperations:
     def vasp_to_res(self, structure):
         pass
 
-    def SCALEUP_to_vasp(self, SCALEUP_structure):
+    def scaleup_to_vasp(self, SCALEUP_structure):
         new_VASP = VASP()
         new_POSCAR = new_VASP.POSCAR
 
@@ -148,6 +176,7 @@ class structOperations:
         new_POSCAR.names = SCALEUP_structure.names
         new_POSCAR.lattype = 'Direct\n'
         new_POSCAR.multiplicity = np.copy(SCALEUP_structure.multiplicity)
+        new_POSCAR.namelist = []
 
         # Atoms need to be reordered.
         ct = 0
@@ -160,8 +189,8 @@ class structOperations:
                     new_POSCAR.at_frac[ct] = np.copy(SCALEUP_structure.at_frac[at])
                     new_POSCAR.at_cart[ct] = np.copy(SCALEUP_structure.at_cart[at])
                     new_POSCAR.atom_id[ct] = np.copy(SCALEUP_structure.atom_id[at])
+                    new_POSCAR.namelist.append(SCALEUP_structure.namelist[at])
                     ct += 1
-        new_POSCAR.namelist = SCALEUP_structure.namelist
         new_POSCAR.type = "VASP"
 
         return new_VASP
@@ -220,8 +249,8 @@ class structOperations:
         # and then from VASP we go anywhere, limit is the sky.
         # Hence, first, type->VASP:
         if original_type != 'VASP':
-            if original_type == 'spld':
-                vasp_structure = self.spld_to_vasp(structure)
+            if original_type == 'scaleup':
+                vasp_structure = self.scaleup_to_vasp(structure)
             if original_type == 'res':
                 vasp_structure = self.res_to_vasp(structure)
             if original_type == 'cif':
@@ -236,8 +265,8 @@ class structOperations:
             new_structure = self.vasp_to_xyz(vasp_structure)
         if target_type == 'VASP':
             new_structure = vasp_structure
-        if target_type == 'spld':
-            new_structure = self.vasp_to_spld(vasp_structure)
+        if target_type == 'scaleup':
+            new_structure = self.vasp_to_scaleup(vasp_structure)
         if target_type == 'cif': 
             new_structure = self.vasp_to_cif(vasp_structure)
         if target_type == 'res':

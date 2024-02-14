@@ -1,10 +1,11 @@
+from toolkit.tools import tools
 from toolkit.global_vars.ext_libs import *
 
 # Class to manage xyz formats.
 class xyz():
     # Initialization
     def __init__(self):
-        self.tools = tools()
+        self.tools = tools.tools()
         self.title = '\n'
         self.B = np.zeros([3,3], dtype=float)
         self.a_lat = 0
@@ -24,7 +25,6 @@ class xyz():
         s += '%d\n' % (len(self.at_cart))
         s += (self.title)
 
-        print(self.namelist)
         for atom in range(len(self.at_cart)):
             s += '%s\t%.8f\t%.8f\t%.8f' % (self.namelist[atom], self.at_cart[atom, 0], self.at_cart[atom, 1], self.at_cart[atom, 2])
             if atom < len(self.at_cart)-1 : s += '\n'

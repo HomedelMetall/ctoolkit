@@ -105,19 +105,32 @@ class POSCAR():
         self.volume = np.linalg.det(self.B)
         self.mothership.outcar.volume = np.linalg.det(self.B)
 
+    # Directly give distances in \AA by providing
+    # indices of the atoms in the poscar.
+    def cart_dist(self, a, b):
+        vec_a = self.at_cart[a]
+        vec_b = self.at_cart[b]
+        bestperiodic, key = self.tools.findBestPairPeriodic(fixed_atom=vec_a, periodic_atom=vec_b, basis=self.B)
+        return np.sqrt(np.dot(vec_a-bestperiodic, vec_a-bestperiodic))
+
     # Atom selection tool. Returns atoms with "name" labels.
     @calculate_time
-    def filter_atoms(self, name, mode='cart'):
+    def filter_atoms(self, name, mode='cart', excludeSatList=[]):
         num_atoms = len(self.namelist[self.namelist == name])
-        at_frac = np.zeros([num_atoms, 3], dtype=float)
-        at_cart = np.zeros([num_atoms, 3], dtype=float)
+        at_frac = []#np.zeros([num_atoms-len(excludeSatList), 3], dtype=float)
+        at_cart = []#np.zeros([num_atoms-len(excludeSatList), 3], dtype=float)
         ct_name = 0
         for i in range(len(self.at_frac)):
+            if i in excludeSatList: continue
             if self.namelist[i] == name:
-                at_frac[ct_name] = self.at_frac[i]
-                at_cart[ct_name] = self.at_cart[i]
+                #at_frac[ct_name] = self.at_frac[i]
+                #at_cart[ct_name] = self.at_cart[i]
+                at_frac.append(self.at_frac[i])
+                at_cart.append(self.at_cart[i])
                 ct_name += 1
 
+        at_frac, at_cart = np.array(at_frac), np.array(at_cart)
+        #print("ctname", ct_name, len(at_frac), len(at_cart))
         if mode == 'frac':
             return at_frac
         if mode == 'cart':
@@ -126,12 +139,21 @@ class POSCAR():
     # Atom selection tool 2. Return an iterable list of
     # the filtered atoms by "name".
     @calculate_time
-    def filter_atoms_list(self, name):
+    def filter_atoms_list(self, name, excludeSatList=[]):
         atom_list = []
         for i in range(len(self.namelist)):
-            if self.namelist[i] == name:
+            if ((self.namelist[i] == name) and
+                (i not in excludeSatList)):
                 atom_list.append(i)
         return atom_list
+
+    # Make the selected atoms be represented by their
+    # image closest to a chosen point in space
+    def make_whole_point(self, atomlist, point):
+        for atom in atomlist:
+            bestperiodic, key = self.tools.findBestPairPeriodic(fixed_atom=point, periodic_atom=self.at_cart[atom], basis=self.B)
+            self.at_frac[atom] = self.tools.cart_to_frac(self.B, bestperiodic)
+            self.at_cart[atom] = bestperiodic
 
     # Function that prints the POSCAR in frac format
     @calculate_time

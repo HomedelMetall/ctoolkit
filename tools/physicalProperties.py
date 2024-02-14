@@ -345,6 +345,7 @@ class physicalProperties:
 
     @calculate_time
     def fit_BM(self, V, E):
+        from scipy import optimize
         init_params = [-59, 156, 1.34, 1.1]
         VE = np.zeros([len(V),2], dtype=float)
         for i in range(len(V)):
@@ -532,6 +533,7 @@ class physicalProperties:
 
     @calculate_time
     def func_spline(self, x, y):
+        from scipy import interpolate
         # We multiply by 3 the number of points, for example
         n = 5 
         new_x = np.zeros([(len(x)-1)*5], dtype=float)
@@ -547,6 +549,7 @@ class physicalProperties:
 
     @calculate_time
     def func_derivative(self, x, y):
+        from scipy import interpolate
         # We multiply by 3 the number of points, for example
         n = 3
         new_x = np.zeros([(len(x)-1)*3], dtype=float)
@@ -595,6 +598,7 @@ class physicalProperties:
 
     @calculate_time
     def autocorrelate_vector(self, X):
+        from scipy import signal
         result = signal.correlate(X, X, mode='full', method='fft')
         return result[int(result.size/2):]
 

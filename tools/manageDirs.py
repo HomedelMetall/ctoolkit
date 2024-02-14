@@ -42,7 +42,7 @@ class manageDirs:
     def getCalculationDirs(self):
         list_calc_dirs = []
         for directory in self.getDirs():
-            filename = directory+'/OUTCAR'
+            filename = directory+'/POSCAR'
             if self.fileExists(filename) == 0:
                 list_calc_dirs.append(directory)
 

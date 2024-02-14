@@ -143,20 +143,14 @@ class randomTools():
         return np.copy(data)#hdr, np.copy(data)
 
     @calculate_time
-    def read_2D_file_GPT(self, filename, offset=1):
-        with open(filename, 'r') as file:
-            data = np.genfromtxt(file, comments='#', dtype=float)
-        if(len(data)==1):
-            return 
-        return np.copy(data)
-
-    @calculate_time
-    def read_2D_file(self, filename, offset=1):
+    def read_2D_file(self, filename, offset=None):
         with open(filename, 'r') as file:
             lines = file.readlines()
-            offset = 0
-            while('#' in lines[offset]):
-                offset += 1
+            
+            if(offset == None):
+                offset = 0
+                while('#' in lines[offset]):
+                    offset += 1
 
             num_rows = len(lines)-offset
             num_cols = len(lines[offset].split())
@@ -323,8 +317,39 @@ class randomTools():
 
     def print_timers(self):
         timers_dict['Total run'] = time.time() - timers_dict['Total run']
-        print("Run timers summary")
+        print("Run timers summary. Total run: %d secs" % (timers_dict['Total run']))
         print("===================================")
-        for timer_name in timers_dict:
+        for timer_name in dict(sorted(timers_dict.items(), key=lambda x:x[1], reverse=True)):
             print("Function %s: %d secs" % (timer_name, timers_dict[timer_name]))
+    
+    def plot(self, a, xrange=None, yrange=None, filename=None):
+        import matplotlib.pyplot as plt
+        # Assumption: each element of a is a two-item list.
+        for item in a:
+            plt.plot(item[0], item[1])
 
+        ax = plt.gca()
+        if(xrange != None):
+            ax.set_xlim([xrange[0],xrange[1]])
+        if(yrange != None):
+            ax.set_ylim([yrange[0], yrange[1]])
+        if(filename != None):
+            plt.savefig(filename, format='png')
+        if(filename == None):
+            plt.show()
+
+    def movie_from_images(image_path_list, output='output.avi', video_length_secs=None):
+        import cv2
+        frames = []
+        for p in image_path_list:
+            frames.append(cv2.imread(p))
+
+        if video_length_secs is None:
+            video_length_secs = len(frames)
+
+        fps = len(frames) / video_length_secs
+        height, width, layers = frames[0].shape
+        video = cv2.VideoWriter(output, codec=cv2.CVideoWriter_fourcc(*'DIVX'), frames_per_second = fps, frame_size = (width, height))
+        [video.write(frame) for frame in frames]
+        cv2.destroyAllWindows()
+        video.release()

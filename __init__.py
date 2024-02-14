@@ -17,5 +17,6 @@ from toolkit.info import *
 
 #info()
 if __name__=='__main__':
-    print("HOLA")
-    info()
+    pass
+    #print("HOLA")
+    #info()

@@ -36,6 +36,38 @@ class cellOperations:
         structure.at_cart = np.copy(new_cart)
         structure.recalculate_poscar()
 
+    def apply_rotation(self, vector, angle, axis, origin=None):
+        # The idea: 
+        # We want to rotate a group of atoms. The positions
+        # of the atoms are given as vectors from the crystallographic
+        # origin of coordinates. Thus what we want to do is:
+        #   move origin -> apply rotation along given axis -> go back to crystal. origin
+
+        # We use the tensorial form of the rotation operator
+        axis = np.array(axis)
+        axis = axis/(np.sqrt(np.dot(axis, axis)))
+        cross = np.zeros([3,3], dtype=float)
+        cart = np.array([[1.0, .0, .0], [.0, 1.0, .0], [.0, .0, 1.0]], dtype=float)
+        for i in range(3):
+            c1 = np.cross(axis, cart[i])
+            cross += np.outer(c1, cart[i])
+        R = np.cos(angle)*np.eye(3,3) + (np.sin(angle))*(cross) + (1-np.cos(angle))*(np.outer(axis, axis))
+
+        # Now we move the origin, compute, and go back to the crystal. origin. All packed.
+        if origin is None:
+            origin = np.zeros([3], dtype=float)
+        
+        return np.dot(R, vector - origin) + origin
+        
+    def rigid_rotation(self, vector_list, angle, axis, origin=None):
+        if len(vector_list.shape) < 2:
+            return self.apply_rotation(vector_list, angle, axis, origin)
+        else:
+            veclist = []
+            for i in range(len(vector_list)):
+                veclist.append(self.apply_rotation(vector_list[i], angle, axis, origin))
+            return np.array(veclist, dtype=float)
+
     def new_supercell_VASP(self, N, VASP_struct):
         new_VASP = self.copy_structure(VASP_struct)
         # Objects can be different...
@@ -59,19 +91,19 @@ class cellOperations:
                     temp_vec = np.copy(VASP_struct.POSCAR.at_frac[ct2] + cell_vector)
                     for i in range(3):
                         new_structure.at_frac[ct_atom, i] = temp_vec[i]/N[i]
-                    new_structure.namelist.append(structure.namelist[ct2])
-                    new_structure.atom_id.append(structure.atom_id[ct2])
+                    new_structure.namelist.append(VASP_struct.POSCAR.namelist[ct2])
+                    new_structure.atom_id.append(VASP_struct.POSCAR.atom_id[ct2])
                     ct_atom += 1
                 ct2 += 1
 
         for i in range(3):
-            new_structure.B[i] = np.copy(structure.POSCAR.B[i]*N[i])
+            new_structure.B[i] = np.copy(VASP_struct.POSCAR.B[i]*N[i])
 
         new_structure.at_cart = np.copy(self.frac_to_cart(new_structure.B, new_structure.at_frac))
 
         mult = float(len(VASP_struct.POSCAR.at_frac))/float(len(new_structure.at_frac))
         new_structure.volume *= mult
-        new_structure.energy *= mult
+        #new_structure.energy *= mult
 
         return new_structure
 
@@ -211,18 +243,6 @@ class cellOperations:
         return structures
 
     @calculate_time
-    def find_firstneighbors_GPT(self, atom, satellites, basis):
-        result = [self.findBestPairPeriodic(atom, satellites[i], basis) for i in range(len(satellites))]
-        best_transform, best_key = np.array(result[:][0]), result[:][1]
-        vec = np.array([atom - best_transform[i] for i in range(len(best_transform))])
-        d = np.linalg.norm(vec, axis=1)
-        min_dist = np.min(d)
-        tol = 20
-        list_neighbors = np.where(d < min_dist * (1 + tol / 100))[0]
-        print(list_neighbors)
-        return list_neighbors
-
-    @calculate_time
     def find_firstneighbors(self, atom, satellites, basis):
         d = np.zeros([len(satellites)], dtype=float)
         tol = 20 # in percentage
@@ -234,38 +254,90 @@ class cellOperations:
                 d[i] = dist
             else:
                 d[i] = 1E5
-            
+        #print(np.sort(d)) 
         min_dist = np.min(d)
         list_neighbors = []
         for i in range(len(satellites)):
             if d[i] < min_dist*(1+tol/100):
+                #print(i, d[i], min_dist*(1+tol/100))
                 list_neighbors.append(i)
 
         return list_neighbors
 
-
-    # Find groups of atoms between the CENTER
-    # of the interaction and the SATELLITE possible
-    # atoms belonging to a particular species
-    @calculate_time
-    def find_groups(self, struct, center, satellite):
+    def find_full_molecules(self, struct, center, satellite, num_neighbors=0):
         center_atoms = struct.filter_atoms(center)
         sat_atoms = struct.filter_atoms(satellite)
+        all_atoms = np.copy(struct.at_cart)
 
         center_atoms_list = struct.filter_atoms_list(center)
         sat_atoms_list = struct.filter_atoms_list(satellite)
 
         groups = []
+        nice_molecules = []
+        for i in range(len(center_atoms)):
+            nice_molecule = []
+            sat_atom_neighbors = []
+            list_neighbors = self.find_firstneighbors(center_atoms[i], sat_atoms, struct.B)
+
+            for j in list_neighbors:
+                sat_atom_neighbors.append(sat_atoms_list[j])
+
+            if num_neighbors==1:
+                # center atom new first neighbors
+                cfn_bulk = self.find_firstneighbors(center_atoms[i], all_atoms, struct.B)
+                cfn_list = []
+                for cfn in cfn_bulk:
+                    if ((cfn not in center_atoms_list) and
+                        (cfn not in sat_atom_neighbors)):
+                        cfn_list.append(cfn)
+
+                # find the first neighbors of every satellite
+                sfn_list_col = []
+                for j in sat_atom_neighbors:
+                    sfn_bulk = self.find_firstneighbors(struct.at_cart[j], all_atoms, struct.B)
+                    sfn_list = []
+                    for sfn in sfn_bulk:
+                        if ((sfn not in center_atoms_list) and 
+                            (sfn not in sat_atom_neighbors) and
+                            (sfn not in cfn_list)): 
+                            sfn_list.append(sfn)
+
+                    sfn_list_col.append(sfn_list)
+                 
+                groups.append([center_atoms_list[i], sat_atom_neighbors, cfn_list, sfn_list_col])
+                nice_molecule.append(center_atoms_list[i])
+                for sat in sat_atom_neighbors: nice_molecule.append(sat)
+                for cfn in cfn_list: nice_molecule.append(cfn)
+                for sfn in sfn_list: nice_molecule.append(sfn)
+                nice_molecules.append(nice_molecule)
+            else:
+                groups.append([center_atoms_list[i], sat_atom_neighbors])
+
+            sys.stdout.write("%3.3f%%\r" % (100*(i+1)/len(center_atoms)))
+            sys.stdout.flush()
+
+        return groups, nice_molecules
+
+    # Find groups of atoms between the CENTER
+    # of the interaction and the SATELLITE possible
+    # atoms belonging to a particular species
+    @calculate_time
+    def find_groups(self, struct, center, satellite, excludeSatList=[]):
+        center_atoms = struct.filter_atoms(center)
+        sat_atoms = struct.filter_atoms(satellite, excludeSatList=excludeSatList)
+        center_atoms_list = struct.filter_atoms_list(center)
+        sat_atoms_list = struct.filter_atoms_list(satellite, excludeSatList=excludeSatList)
+        #print(len(sat_atoms), len(sat_atoms_list))
+        groups = []
         for i in range(len(center_atoms)):
             sat_atom_neighbors = []
             list_neighbors = self.find_firstneighbors(center_atoms[i], sat_atoms, struct.B)
-        
             for j in list_neighbors:
                 sat_atom_neighbors.append(sat_atoms_list[j])
             groups.append([center_atoms_list[i], sat_atom_neighbors])
             
-            sys.stdout.write("%3.3f%%\r" % (100*(i+1)/len(center_atoms)))
-            sys.stdout.flush()
+            #sys.stdout.write("%3.3f%%\r" % (100*(i+1)/len(center_atoms)))
+            #sys.stdout.flush()
 
         return groups
 
