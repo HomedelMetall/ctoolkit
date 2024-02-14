@@ -1,2 +1,2 @@
 In order to install the Crystal Toolkit:
-    $ pip install git+git://github.com/cescorihuela/ctoolkit.git#egg=ctoolkit
+    $ pip install git+https://github.com/cescorihuela/ctoolkit.git#egg=ctoolkit
