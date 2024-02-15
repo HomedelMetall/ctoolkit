@@ -6,6 +6,6 @@ build-backend = "setuptools.build_meta"
 project-name = "ctoolkit"
 git-username = "cescorihuela"
 git-email = "c.escorihuela.sayalero@gmail.com"
-version-strings = 0 0 1
+version-strings = "0.0.1"
 
 [tool.setuptools_scm]
