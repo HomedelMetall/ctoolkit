@@ -2,4 +2,7 @@
 requires = ["numpy", "scipy", "matplotlib", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
+[tool.autopub]
+project-name = "ctoolkit"
+
 [tool.setuptools_scm]
