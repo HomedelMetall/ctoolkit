@@ -4,5 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.autopub]
 project-name = "ctoolkit"
+git-username = "cescorihuela"
+git-email = "c.escorihuela.sayalero@gmail.com"
 
 [tool.setuptools_scm]
