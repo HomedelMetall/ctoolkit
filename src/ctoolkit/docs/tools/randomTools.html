@@ -1,0 +1,1438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>ctoolkit.tools.randomTools API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>ctoolkit.tools.randomTools</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from toolkit.global_vars.ext_libs import *
+from toolkit.global_vars.tk_lib_LAMMPS import *
+from toolkit.global_vars.tk_lib_VASP import *
+class randomTools():
+    def __init__(self):
+        pass
+
+    def cat_lammps_trajectories(self, filenames):
+        output_xdat = &#39;XDATCAR&#39;
+        LAMMPS_structs = []
+        total_nat = 0
+        for name in filenames:
+            Lstruct = LAMMPS()
+            Lstruct.read_snapshots(name, style=&#39;typepos&#39;)
+            total_nat += len(Lstruct.id_lammps[0])
+            LAMMPS_structs.append(Lstruct)
+
+        LAMMPS_struct_cat = LAMMPS()
+        LAMMPS_struct_cat.id_lammps = np.zeros([len(LAMMPS_structs[0].id_lammps),
+                                                    total_nat], dtype=int)
+        LAMMPS_struct_cat.boxes = np.copy(LAMMPS_structs[0].boxes)
+        LAMMPS_struct_cat.atoms = np.zeros([len(LAMMPS_structs[0].atoms),
+                                                    total_nat, 3], dtype=float)
+
+        init = 0
+        for struct in LAMMPS_structs:
+            LAMMPS_struct_cat.id_lammps[:, init:init+len(struct.id_lammps[0])] = np.copy(struct.id_lammps)
+            LAMMPS_struct_cat.atoms[:, init:init+len(struct.atoms[0]), :] = np.copy(struct.atoms)
+            init += len(struct.id_lammps[0])
+
+        self.lammps_to_xdatcar(LAMMPS_struct_cat, output_xdat)
+
+    def group_coherence_test(self, group):
+        chk = len(group[0][1])
+        for g in group:
+            if len(g[1]) != chk:
+                print(&#34;Not all centers have the same number of group satellites! Check tolerances...&#34;)
+                return -1
+
+        return 0
+
+    def molecule_finder(self, species):
+        VASPstruct = VASP()
+        VASPstruct.POSCAR.read_poscar(&#39;POSCAR&#39;)
+        VASP_atoms = np.copy(VASPstruct.POSCAR.at_cart)
+        #MD_structures = tools.loadVASPMD(&#39;.&#39;, &#39;XDATCAR&#39;)
+        print(&#39;Looking for groups...&#39;)
+        groups = []
+        for ids, specie1 in enumerate(species):
+            for specie2 in species[ids:]: 
+                group = self.find_groups(VASPstruct.POSCAR, specie1, specie2)
+                print(&#39;%s-%s: %d groups of %d atoms&#39; % (specie1, specie2, len(group), 1+len(group[0][1])))
+                result = group_coherence_test(group)
+
+                groups.append(group)
+
+    @calculate_time
+    def readXDATCAR(self, filename):
+        with open(filename, &#39;r&#39;) as file:
+            header_lines = 7
+            B = np.zeros([3,3], dtype=float)
+            step_header_lines = 1
+            lines = file.readlines()
+            for i in range(3):
+              B[i,:] = np.array(lines[2+i].split()[:],dtype=float)
+            numatoms = np.sum(np.array(lines[6].split(), dtype=int))
+            numsnapshots = int((len(lines)-header_lines)/(step_header_lines + numatoms))
+            print(numsnapshots) 
+            at_frac = np.zeros([numsnapshots, numatoms, 3], dtype=float)
+            for i in range(numsnapshots):
+                pos_file = header_lines + step_header_lines + (step_header_lines+numatoms)*i
+                at_frac[i] = np.array([[float(val) for val in line.split()] for line in lines[pos_file:pos_file+numatoms]])
+        print(at_frac.shape)
+        return B, at_frac
+
+    @calculate_time
+    def linearfit(self, x, y):
+        # Solving for y = mx + c
+        A = np.vstack([x, np.ones(len(x))]).T
+        m, c = np.linalg.lstsq(A, y, rcond=None)[0]
+        return m, c
+
+    @calculate_time
+    def sorting_order(self, array, tol=1E-8):
+        sorted_list = np.sort(array)
+        s_order = []
+        for i in range(len(sorted_list)):
+            for j in range(len(array)):
+                if (np.abs(array[j]-sorted_list[i]) &lt; tol) :
+                    s_order.append(j)
+                    break
+
+        return s_order
+
+    @calculate_time
+    def resort(self, array, sorting_order):
+        new_array = np.copy(array)
+        for i, sord in enumerate(sorting_order):
+            new_array[i] = array[sord]
+    
+        return new_array
+
+    @calculate_time
+    def sortMatrixbyCols(self, A, axis, tol=1E-8):
+        Anew = np.copy(np.array(A, dtype=float))
+        sorted_axis = np.copy(np.sort(Anew[:, axis]))
+        Asorted = np.zeros([len(Anew), len(Anew[0])], dtype=float)
+        for i in range(len(sorted_axis)):
+            for j in range(len(Anew[:, axis])):
+                if(np.abs(sorted_axis[i] - Anew[j, axis]) &lt; tol):
+                    for l in range(len(Anew[j, :])):
+                        Asorted[i,l] = Anew[j,l] + .0
+
+        return Asorted
+
+    # Num_info = # atoms, for example
+    @calculate_time
+    def read_sequential_file(self, filename, num_info, hdr_lines = 0, offset = 0):
+        # Basically: a sequential file has N header lines + M atom lines for S snapshots, for example.
+        # Hence, the number of lines L has to be
+        #           L = (N+M)*S
+
+        with open(filename, &#39;r&#39;) as file:
+            lines = file.readlines()
+            num_steps = int((len(lines)-offset)/(hdr_lines + num_info))
+            res = (len(lines)-offset)%(hdr_lines + num_info)
+            if res != 0:
+                print(&#34;Hey! Check num_info, hdr_lines. The data you provide seems non commensurate!\n Residual (L-offset)%%(N+M) = %.3f&#34; % (res))
+            dim_data = len(lines[offset+hdr_lines].split())
+            data = np.zeros([num_steps, num_info, dim_data], dtype=float)
+            hdr = []
+            for i in range(num_steps):
+                sp = int(offset+i*(hdr_lines+num_info))
+                data[i] = np.array([[float(val) for val in line.split()] for line in lines[sp+hdr_lines:sp+hdr_lines+num_info]])
+                #for j in range(hdr_lines):
+                #    hdr.append(lines[sp+j].split())
+                #for j in range(num_info):
+                #    data[i,j] = np.array(lines[sp+hdr_lines+j].split(), dtype=float)
+                sys.stdout.write(&#34;%3.2f...\r&#34; % (100*(i+1)/num_steps))
+                sys.stdout.flush()
+
+        # Handle hdr with care. It&#39;s a list of np.arrays, not an np.array itself!
+        return np.copy(data)#hdr, np.copy(data)
+
+    @calculate_time
+    def read_2D_file(self, filename, offset=None):
+        with open(filename, &#39;r&#39;) as file:
+            lines = file.readlines()
+            
+            if(offset == None):
+                offset = 0
+                while(&#39;#&#39; in lines[offset]):
+                    offset += 1
+
+            num_rows = len(lines)-offset
+            num_cols = len(lines[offset].split())
+            data = np.zeros([num_rows, num_cols], dtype=float)
+            for i, line in enumerate(lines[offset:]):
+                data[i] = np.array(line.split(), dtype=float)
+
+        return np.copy(data)
+
+    @calculate_time
+    def print_sequential_MD_file(self, filename, datalist, headerMD=&#39;#\n&#39;):
+        numsteps = len(datalist)
+        numcols = len(datalist[0,0])
+        s = &#39;&#39;
+        s += headerMD
+        if not &#39;\n&#39; in headerMD:
+            s += &#39;\n&#39;
+
+        for step in range(numsteps):
+            header_step = &#39;Direct configuration=     %d\n&#39; % (step)
+            datanow = []
+            for i in range(numcols):
+                datanow.append(datalist[step,:,i])
+
+            snow = self.print_to_file(filename, datanow, header=None, tostring=True)
+
+            s += header_step + snow
+
+        with open(filename, &#39;w&#39;) as file:
+            file.write(s)
+
+    @calculate_time
+    def print_to_file_GPT(self, filename, datalist, header=&#39;#First line is comment line\n&#39;, tostring=False, precision=8):
+        # Check that the length of the file to print in rows is consistent for all data...
+        length_check = np.array([data.shape[0] for data in datalist], dtype=int)
+        if len(np.unique(length_check)) != 1:
+            raise ValueError(&#34;Data length of rows inconsistent!&#34;)
+        # Use numpy&#39;s savetxt() method to write the data to a file
+        np.savetxt(filename, np.column_stack(datalist), header=header, fmt=&#39;%.*e\t&#39; % precision)
+
+    # A wrapper for file print functions. 
+    # datalist = [np.array1, ...]
+    @calculate_time
+    def print_to_file(self, filename, datalist, header=&#39;#First line is comment line\n&#39;, tostring=False, precision=8):
+        fopen = open(filename, &#39;w&#39;)
+        numcols = len(datalist)
+        multiplicity = []
+        length_check = []
+        for data in datalist:
+            # Values
+            if len(data.shape) == 0:
+                multiplicity.append(1)
+                length_check.append(len(data))
+
+            # Columns
+            elif len(data.shape) == 1:
+                multiplicity.append(1)
+                length_check.append(len(data))
+
+            # Matrices
+            elif len(data.shape) &gt; 1:
+                (dimrows, dimcols) = data.shape
+                length_check.append(dimrows)
+                multiplicity.append(dimcols)
+            
+        # Check that the length of the file to print in rows is consistent for all data...
+        length_check = np.array(length_check, dtype=int)
+        for i in range(len(length_check)):
+            if length_check[0] != length_check[i]:
+                print(&#34;Data length of rows inconsistent!&#34;)
+                sys.exit()
+
+        # Usual data-&gt;string transformation :)
+        s = &#39;&#39;
+        for row in range(length_check[0]):
+            for i, data in enumerate(datalist):
+                if multiplicity[i] == 1:
+                    s += &#39;%.*e\t&#39; % (precision, data[row])
+                else:
+                    for mult in range(multiplicity[i]):
+                        s += &#39;%.*e\t&#39; % (precision, data[row, mult])
+            s += &#39;\n&#39;
+        
+        #print(&#34;I&#39;m here&#34;)
+        if(tostring == True):
+            return s
+        
+        with open(filename, &#39;w&#39;) as file:
+            if(header == None):
+                file.write(s)
+            else:
+                if not &#39;\n&#39; in header:
+                    header += &#39;\n&#39;
+                file.write(header+s)
+
+    @calculate_time
+    def flatten_3dvecs(self, array):
+        darray = np.zeros([3*len(array)], dtype=float)
+        ct = 0
+        for i in range(len(array)):
+            for j in range(len(array[0])):
+                darray[ct] = array[i, j]
+
+        return np.copy(darray)
+
+    @calculate_time
+    def blow_3dvecs(self, array):
+        darray = np.zeros([len(array)/3, 3], dtype=float)
+        ct = 0
+        for i in range(len(array)):
+            for j in range(3):
+                darray[i,j] = array[3*i+j]
+
+        return np.copy(darray)       
+
+    @calculate_time
+    def vector_of_norms(self, array):
+        darray = np.zeros([len(array), 3], dtype=float)
+        for i in range(len(array)):
+            darray[i, 0] = 1. / np.sqrt(np.dot(array[i], array[i]))
+            darray[i, 1] = 1. / np.sqrt(np.dot(array[i], array[i]))
+            darray[i, 2] = 1. / np.sqrt(np.dot(array[i], array[i]))
+
+        return np.copy(darray)
+
+    @calculate_time
+    def floatrange(self, start, end, numdiv=100):
+        vec = np.zeros([numdiv], dtype=float)
+        for i in range(numdiv):
+            vec[i] = start + float(i*(end-start)/numdiv)
+
+        return vec
+
+    @calculate_time
+    def normalize_vector_set(self, vectorset):
+        num_vecs = len(vectorset)
+        dims = len(vectorset[0])
+        norms = 1./np.array(list(map(np.sqrt, np.einsum(&#39;...j,...j&#39;, vectorset, vectorset))), dtype=float)
+        newvec = np.copy(np.einsum(&#39;...i,...&#39;, vectorset, norms))
+    
+        return np.copy(newvec)
+
+    @calculate_time
+    def normalize_vectors_MD(self, vectors):
+        num_steps = len(vectors)
+        num_vecs = len(vectors[0])
+        dims = len(vectors[0,0])
+
+        newvecs = np.zeros([num_steps, num_vecs, dims], dtype=float)
+
+        for i in range(num_steps):
+            newvecs[i] = np.copy(self.normalize_vector_set(vectors[i]))
+
+        return newvecs
+
+    # Average a set of lists, possibly applying an offset to data :)
+    @calculate_time
+    def multiaverage(self, collection, offset):
+        output = []
+        for item in collection:
+            output.append(np.average(item[offset:len(item)]))
+
+        return output
+
+    def print_timers(self):
+        timers_dict[&#39;Total run&#39;] = time.time() - timers_dict[&#39;Total run&#39;]
+        print(&#34;Run timers summary. Total run: %d secs&#34; % (timers_dict[&#39;Total run&#39;]))
+        print(&#34;===================================&#34;)
+        for timer_name in dict(sorted(timers_dict.items(), key=lambda x:x[1], reverse=True)):
+            print(&#34;Function %s: %d secs&#34; % (timer_name, timers_dict[timer_name]))
+    
+    def plot(self, a, xrange=None, yrange=None, filename=None):
+        import matplotlib.pyplot as plt
+        # Assumption: each element of a is a two-item list.
+        for item in a:
+            plt.plot(item[0], item[1])
+
+        ax = plt.gca()
+        if(xrange != None):
+            ax.set_xlim([xrange[0],xrange[1]])
+        if(yrange != None):
+            ax.set_ylim([yrange[0], yrange[1]])
+        if(filename != None):
+            plt.savefig(filename, format=&#39;png&#39;)
+        if(filename == None):
+            plt.show()
+
+    def movie_from_images(image_path_list, output=&#39;output.avi&#39;, video_length_secs=None):
+        import cv2
+        frames = []
+        for p in image_path_list:
+            frames.append(cv2.imread(p))
+
+        if video_length_secs is None:
+            video_length_secs = len(frames)
+
+        fps = len(frames) / video_length_secs
+        height, width, layers = frames[0].shape
+        video = cv2.VideoWriter(output, codec=cv2.CVideoWriter_fourcc(*&#39;DIVX&#39;), frames_per_second = fps, frame_size = (width, height))
+        [video.write(frame) for frame in frames]
+        cv2.destroyAllWindows()
+        video.release()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="ctoolkit.tools.randomTools.randomTools"><code class="flex name class">
+<span>class <span class="ident">randomTools</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class randomTools():
+    def __init__(self):
+        pass
+
+    def cat_lammps_trajectories(self, filenames):
+        output_xdat = &#39;XDATCAR&#39;
+        LAMMPS_structs = []
+        total_nat = 0
+        for name in filenames:
+            Lstruct = LAMMPS()
+            Lstruct.read_snapshots(name, style=&#39;typepos&#39;)
+            total_nat += len(Lstruct.id_lammps[0])
+            LAMMPS_structs.append(Lstruct)
+
+        LAMMPS_struct_cat = LAMMPS()
+        LAMMPS_struct_cat.id_lammps = np.zeros([len(LAMMPS_structs[0].id_lammps),
+                                                    total_nat], dtype=int)
+        LAMMPS_struct_cat.boxes = np.copy(LAMMPS_structs[0].boxes)
+        LAMMPS_struct_cat.atoms = np.zeros([len(LAMMPS_structs[0].atoms),
+                                                    total_nat, 3], dtype=float)
+
+        init = 0
+        for struct in LAMMPS_structs:
+            LAMMPS_struct_cat.id_lammps[:, init:init+len(struct.id_lammps[0])] = np.copy(struct.id_lammps)
+            LAMMPS_struct_cat.atoms[:, init:init+len(struct.atoms[0]), :] = np.copy(struct.atoms)
+            init += len(struct.id_lammps[0])
+
+        self.lammps_to_xdatcar(LAMMPS_struct_cat, output_xdat)
+
+    def group_coherence_test(self, group):
+        chk = len(group[0][1])
+        for g in group:
+            if len(g[1]) != chk:
+                print(&#34;Not all centers have the same number of group satellites! Check tolerances...&#34;)
+                return -1
+
+        return 0
+
+    def molecule_finder(self, species):
+        VASPstruct = VASP()
+        VASPstruct.POSCAR.read_poscar(&#39;POSCAR&#39;)
+        VASP_atoms = np.copy(VASPstruct.POSCAR.at_cart)
+        #MD_structures = tools.loadVASPMD(&#39;.&#39;, &#39;XDATCAR&#39;)
+        print(&#39;Looking for groups...&#39;)
+        groups = []
+        for ids, specie1 in enumerate(species):
+            for specie2 in species[ids:]: 
+                group = self.find_groups(VASPstruct.POSCAR, specie1, specie2)
+                print(&#39;%s-%s: %d groups of %d atoms&#39; % (specie1, specie2, len(group), 1+len(group[0][1])))
+                result = group_coherence_test(group)
+
+                groups.append(group)
+
+    @calculate_time
+    def readXDATCAR(self, filename):
+        with open(filename, &#39;r&#39;) as file:
+            header_lines = 7
+            B = np.zeros([3,3], dtype=float)
+            step_header_lines = 1
+            lines = file.readlines()
+            for i in range(3):
+              B[i,:] = np.array(lines[2+i].split()[:],dtype=float)
+            numatoms = np.sum(np.array(lines[6].split(), dtype=int))
+            numsnapshots = int((len(lines)-header_lines)/(step_header_lines + numatoms))
+            print(numsnapshots) 
+            at_frac = np.zeros([numsnapshots, numatoms, 3], dtype=float)
+            for i in range(numsnapshots):
+                pos_file = header_lines + step_header_lines + (step_header_lines+numatoms)*i
+                at_frac[i] = np.array([[float(val) for val in line.split()] for line in lines[pos_file:pos_file+numatoms]])
+        print(at_frac.shape)
+        return B, at_frac
+
+    @calculate_time
+    def linearfit(self, x, y):
+        # Solving for y = mx + c
+        A = np.vstack([x, np.ones(len(x))]).T
+        m, c = np.linalg.lstsq(A, y, rcond=None)[0]
+        return m, c
+
+    @calculate_time
+    def sorting_order(self, array, tol=1E-8):
+        sorted_list = np.sort(array)
+        s_order = []
+        for i in range(len(sorted_list)):
+            for j in range(len(array)):
+                if (np.abs(array[j]-sorted_list[i]) &lt; tol) :
+                    s_order.append(j)
+                    break
+
+        return s_order
+
+    @calculate_time
+    def resort(self, array, sorting_order):
+        new_array = np.copy(array)
+        for i, sord in enumerate(sorting_order):
+            new_array[i] = array[sord]
+    
+        return new_array
+
+    @calculate_time
+    def sortMatrixbyCols(self, A, axis, tol=1E-8):
+        Anew = np.copy(np.array(A, dtype=float))
+        sorted_axis = np.copy(np.sort(Anew[:, axis]))
+        Asorted = np.zeros([len(Anew), len(Anew[0])], dtype=float)
+        for i in range(len(sorted_axis)):
+            for j in range(len(Anew[:, axis])):
+                if(np.abs(sorted_axis[i] - Anew[j, axis]) &lt; tol):
+                    for l in range(len(Anew[j, :])):
+                        Asorted[i,l] = Anew[j,l] + .0
+
+        return Asorted
+
+    # Num_info = # atoms, for example
+    @calculate_time
+    def read_sequential_file(self, filename, num_info, hdr_lines = 0, offset = 0):
+        # Basically: a sequential file has N header lines + M atom lines for S snapshots, for example.
+        # Hence, the number of lines L has to be
+        #           L = (N+M)*S
+
+        with open(filename, &#39;r&#39;) as file:
+            lines = file.readlines()
+            num_steps = int((len(lines)-offset)/(hdr_lines + num_info))
+            res = (len(lines)-offset)%(hdr_lines + num_info)
+            if res != 0:
+                print(&#34;Hey! Check num_info, hdr_lines. The data you provide seems non commensurate!\n Residual (L-offset)%%(N+M) = %.3f&#34; % (res))
+            dim_data = len(lines[offset+hdr_lines].split())
+            data = np.zeros([num_steps, num_info, dim_data], dtype=float)
+            hdr = []
+            for i in range(num_steps):
+                sp = int(offset+i*(hdr_lines+num_info))
+                data[i] = np.array([[float(val) for val in line.split()] for line in lines[sp+hdr_lines:sp+hdr_lines+num_info]])
+                #for j in range(hdr_lines):
+                #    hdr.append(lines[sp+j].split())
+                #for j in range(num_info):
+                #    data[i,j] = np.array(lines[sp+hdr_lines+j].split(), dtype=float)
+                sys.stdout.write(&#34;%3.2f...\r&#34; % (100*(i+1)/num_steps))
+                sys.stdout.flush()
+
+        # Handle hdr with care. It&#39;s a list of np.arrays, not an np.array itself!
+        return np.copy(data)#hdr, np.copy(data)
+
+    @calculate_time
+    def read_2D_file(self, filename, offset=None):
+        with open(filename, &#39;r&#39;) as file:
+            lines = file.readlines()
+            
+            if(offset == None):
+                offset = 0
+                while(&#39;#&#39; in lines[offset]):
+                    offset += 1
+
+            num_rows = len(lines)-offset
+            num_cols = len(lines[offset].split())
+            data = np.zeros([num_rows, num_cols], dtype=float)
+            for i, line in enumerate(lines[offset:]):
+                data[i] = np.array(line.split(), dtype=float)
+
+        return np.copy(data)
+
+    @calculate_time
+    def print_sequential_MD_file(self, filename, datalist, headerMD=&#39;#\n&#39;):
+        numsteps = len(datalist)
+        numcols = len(datalist[0,0])
+        s = &#39;&#39;
+        s += headerMD
+        if not &#39;\n&#39; in headerMD:
+            s += &#39;\n&#39;
+
+        for step in range(numsteps):
+            header_step = &#39;Direct configuration=     %d\n&#39; % (step)
+            datanow = []
+            for i in range(numcols):
+                datanow.append(datalist[step,:,i])
+
+            snow = self.print_to_file(filename, datanow, header=None, tostring=True)
+
+            s += header_step + snow
+
+        with open(filename, &#39;w&#39;) as file:
+            file.write(s)
+
+    @calculate_time
+    def print_to_file_GPT(self, filename, datalist, header=&#39;#First line is comment line\n&#39;, tostring=False, precision=8):
+        # Check that the length of the file to print in rows is consistent for all data...
+        length_check = np.array([data.shape[0] for data in datalist], dtype=int)
+        if len(np.unique(length_check)) != 1:
+            raise ValueError(&#34;Data length of rows inconsistent!&#34;)
+        # Use numpy&#39;s savetxt() method to write the data to a file
+        np.savetxt(filename, np.column_stack(datalist), header=header, fmt=&#39;%.*e\t&#39; % precision)
+
+    # A wrapper for file print functions. 
+    # datalist = [np.array1, ...]
+    @calculate_time
+    def print_to_file(self, filename, datalist, header=&#39;#First line is comment line\n&#39;, tostring=False, precision=8):
+        fopen = open(filename, &#39;w&#39;)
+        numcols = len(datalist)
+        multiplicity = []
+        length_check = []
+        for data in datalist:
+            # Values
+            if len(data.shape) == 0:
+                multiplicity.append(1)
+                length_check.append(len(data))
+
+            # Columns
+            elif len(data.shape) == 1:
+                multiplicity.append(1)
+                length_check.append(len(data))
+
+            # Matrices
+            elif len(data.shape) &gt; 1:
+                (dimrows, dimcols) = data.shape
+                length_check.append(dimrows)
+                multiplicity.append(dimcols)
+            
+        # Check that the length of the file to print in rows is consistent for all data...
+        length_check = np.array(length_check, dtype=int)
+        for i in range(len(length_check)):
+            if length_check[0] != length_check[i]:
+                print(&#34;Data length of rows inconsistent!&#34;)
+                sys.exit()
+
+        # Usual data-&gt;string transformation :)
+        s = &#39;&#39;
+        for row in range(length_check[0]):
+            for i, data in enumerate(datalist):
+                if multiplicity[i] == 1:
+                    s += &#39;%.*e\t&#39; % (precision, data[row])
+                else:
+                    for mult in range(multiplicity[i]):
+                        s += &#39;%.*e\t&#39; % (precision, data[row, mult])
+            s += &#39;\n&#39;
+        
+        #print(&#34;I&#39;m here&#34;)
+        if(tostring == True):
+            return s
+        
+        with open(filename, &#39;w&#39;) as file:
+            if(header == None):
+                file.write(s)
+            else:
+                if not &#39;\n&#39; in header:
+                    header += &#39;\n&#39;
+                file.write(header+s)
+
+    @calculate_time
+    def flatten_3dvecs(self, array):
+        darray = np.zeros([3*len(array)], dtype=float)
+        ct = 0
+        for i in range(len(array)):
+            for j in range(len(array[0])):
+                darray[ct] = array[i, j]
+
+        return np.copy(darray)
+
+    @calculate_time
+    def blow_3dvecs(self, array):
+        darray = np.zeros([len(array)/3, 3], dtype=float)
+        ct = 0
+        for i in range(len(array)):
+            for j in range(3):
+                darray[i,j] = array[3*i+j]
+
+        return np.copy(darray)       
+
+    @calculate_time
+    def vector_of_norms(self, array):
+        darray = np.zeros([len(array), 3], dtype=float)
+        for i in range(len(array)):
+            darray[i, 0] = 1. / np.sqrt(np.dot(array[i], array[i]))
+            darray[i, 1] = 1. / np.sqrt(np.dot(array[i], array[i]))
+            darray[i, 2] = 1. / np.sqrt(np.dot(array[i], array[i]))
+
+        return np.copy(darray)
+
+    @calculate_time
+    def floatrange(self, start, end, numdiv=100):
+        vec = np.zeros([numdiv], dtype=float)
+        for i in range(numdiv):
+            vec[i] = start + float(i*(end-start)/numdiv)
+
+        return vec
+
+    @calculate_time
+    def normalize_vector_set(self, vectorset):
+        num_vecs = len(vectorset)
+        dims = len(vectorset[0])
+        norms = 1./np.array(list(map(np.sqrt, np.einsum(&#39;...j,...j&#39;, vectorset, vectorset))), dtype=float)
+        newvec = np.copy(np.einsum(&#39;...i,...&#39;, vectorset, norms))
+    
+        return np.copy(newvec)
+
+    @calculate_time
+    def normalize_vectors_MD(self, vectors):
+        num_steps = len(vectors)
+        num_vecs = len(vectors[0])
+        dims = len(vectors[0,0])
+
+        newvecs = np.zeros([num_steps, num_vecs, dims], dtype=float)
+
+        for i in range(num_steps):
+            newvecs[i] = np.copy(self.normalize_vector_set(vectors[i]))
+
+        return newvecs
+
+    # Average a set of lists, possibly applying an offset to data :)
+    @calculate_time
+    def multiaverage(self, collection, offset):
+        output = []
+        for item in collection:
+            output.append(np.average(item[offset:len(item)]))
+
+        return output
+
+    def print_timers(self):
+        timers_dict[&#39;Total run&#39;] = time.time() - timers_dict[&#39;Total run&#39;]
+        print(&#34;Run timers summary. Total run: %d secs&#34; % (timers_dict[&#39;Total run&#39;]))
+        print(&#34;===================================&#34;)
+        for timer_name in dict(sorted(timers_dict.items(), key=lambda x:x[1], reverse=True)):
+            print(&#34;Function %s: %d secs&#34; % (timer_name, timers_dict[timer_name]))
+    
+    def plot(self, a, xrange=None, yrange=None, filename=None):
+        import matplotlib.pyplot as plt
+        # Assumption: each element of a is a two-item list.
+        for item in a:
+            plt.plot(item[0], item[1])
+
+        ax = plt.gca()
+        if(xrange != None):
+            ax.set_xlim([xrange[0],xrange[1]])
+        if(yrange != None):
+            ax.set_ylim([yrange[0], yrange[1]])
+        if(filename != None):
+            plt.savefig(filename, format=&#39;png&#39;)
+        if(filename == None):
+            plt.show()
+
+    def movie_from_images(image_path_list, output=&#39;output.avi&#39;, video_length_secs=None):
+        import cv2
+        frames = []
+        for p in image_path_list:
+            frames.append(cv2.imread(p))
+
+        if video_length_secs is None:
+            video_length_secs = len(frames)
+
+        fps = len(frames) / video_length_secs
+        height, width, layers = frames[0].shape
+        video = cv2.VideoWriter(output, codec=cv2.CVideoWriter_fourcc(*&#39;DIVX&#39;), frames_per_second = fps, frame_size = (width, height))
+        [video.write(frame) for frame in frames]
+        cv2.destroyAllWindows()
+        video.release()</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ctoolkit.tools.randomTools.randomTools.blow_3dvecs"><code class="name flex">
+<span>def <span class="ident">blow_3dvecs</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.cat_lammps_trajectories"><code class="name flex">
+<span>def <span class="ident">cat_lammps_trajectories</span></span>(<span>self, filenames)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cat_lammps_trajectories(self, filenames):
+    output_xdat = &#39;XDATCAR&#39;
+    LAMMPS_structs = []
+    total_nat = 0
+    for name in filenames:
+        Lstruct = LAMMPS()
+        Lstruct.read_snapshots(name, style=&#39;typepos&#39;)
+        total_nat += len(Lstruct.id_lammps[0])
+        LAMMPS_structs.append(Lstruct)
+
+    LAMMPS_struct_cat = LAMMPS()
+    LAMMPS_struct_cat.id_lammps = np.zeros([len(LAMMPS_structs[0].id_lammps),
+                                                total_nat], dtype=int)
+    LAMMPS_struct_cat.boxes = np.copy(LAMMPS_structs[0].boxes)
+    LAMMPS_struct_cat.atoms = np.zeros([len(LAMMPS_structs[0].atoms),
+                                                total_nat, 3], dtype=float)
+
+    init = 0
+    for struct in LAMMPS_structs:
+        LAMMPS_struct_cat.id_lammps[:, init:init+len(struct.id_lammps[0])] = np.copy(struct.id_lammps)
+        LAMMPS_struct_cat.atoms[:, init:init+len(struct.atoms[0]), :] = np.copy(struct.atoms)
+        init += len(struct.id_lammps[0])
+
+    self.lammps_to_xdatcar(LAMMPS_struct_cat, output_xdat)</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.flatten_3dvecs"><code class="name flex">
+<span>def <span class="ident">flatten_3dvecs</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.floatrange"><code class="name flex">
+<span>def <span class="ident">floatrange</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.group_coherence_test"><code class="name flex">
+<span>def <span class="ident">group_coherence_test</span></span>(<span>self, group)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def group_coherence_test(self, group):
+    chk = len(group[0][1])
+    for g in group:
+        if len(g[1]) != chk:
+            print(&#34;Not all centers have the same number of group satellites! Check tolerances...&#34;)
+            return -1
+
+    return 0</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.linearfit"><code class="name flex">
+<span>def <span class="ident">linearfit</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.molecule_finder"><code class="name flex">
+<span>def <span class="ident">molecule_finder</span></span>(<span>self, species)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def molecule_finder(self, species):
+    VASPstruct = VASP()
+    VASPstruct.POSCAR.read_poscar(&#39;POSCAR&#39;)
+    VASP_atoms = np.copy(VASPstruct.POSCAR.at_cart)
+    #MD_structures = tools.loadVASPMD(&#39;.&#39;, &#39;XDATCAR&#39;)
+    print(&#39;Looking for groups...&#39;)
+    groups = []
+    for ids, specie1 in enumerate(species):
+        for specie2 in species[ids:]: 
+            group = self.find_groups(VASPstruct.POSCAR, specie1, specie2)
+            print(&#39;%s-%s: %d groups of %d atoms&#39; % (specie1, specie2, len(group), 1+len(group[0][1])))
+            result = group_coherence_test(group)
+
+            groups.append(group)</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.movie_from_images"><code class="name flex">
+<span>def <span class="ident">movie_from_images</span></span>(<span>image_path_list, output='output.avi', video_length_secs=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def movie_from_images(image_path_list, output=&#39;output.avi&#39;, video_length_secs=None):
+    import cv2
+    frames = []
+    for p in image_path_list:
+        frames.append(cv2.imread(p))
+
+    if video_length_secs is None:
+        video_length_secs = len(frames)
+
+    fps = len(frames) / video_length_secs
+    height, width, layers = frames[0].shape
+    video = cv2.VideoWriter(output, codec=cv2.CVideoWriter_fourcc(*&#39;DIVX&#39;), frames_per_second = fps, frame_size = (width, height))
+    [video.write(frame) for frame in frames]
+    cv2.destroyAllWindows()
+    video.release()</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.multiaverage"><code class="name flex">
+<span>def <span class="ident">multiaverage</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.normalize_vector_set"><code class="name flex">
+<span>def <span class="ident">normalize_vector_set</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.normalize_vectors_MD"><code class="name flex">
+<span>def <span class="ident">normalize_vectors_MD</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.plot"><code class="name flex">
+<span>def <span class="ident">plot</span></span>(<span>self, a, xrange=None, yrange=None, filename=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot(self, a, xrange=None, yrange=None, filename=None):
+    import matplotlib.pyplot as plt
+    # Assumption: each element of a is a two-item list.
+    for item in a:
+        plt.plot(item[0], item[1])
+
+    ax = plt.gca()
+    if(xrange != None):
+        ax.set_xlim([xrange[0],xrange[1]])
+    if(yrange != None):
+        ax.set_ylim([yrange[0], yrange[1]])
+    if(filename != None):
+        plt.savefig(filename, format=&#39;png&#39;)
+    if(filename == None):
+        plt.show()</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.print_sequential_MD_file"><code class="name flex">
+<span>def <span class="ident">print_sequential_MD_file</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.print_timers"><code class="name flex">
+<span>def <span class="ident">print_timers</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_timers(self):
+    timers_dict[&#39;Total run&#39;] = time.time() - timers_dict[&#39;Total run&#39;]
+    print(&#34;Run timers summary. Total run: %d secs&#34; % (timers_dict[&#39;Total run&#39;]))
+    print(&#34;===================================&#34;)
+    for timer_name in dict(sorted(timers_dict.items(), key=lambda x:x[1], reverse=True)):
+        print(&#34;Function %s: %d secs&#34; % (timer_name, timers_dict[timer_name]))</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.print_to_file"><code class="name flex">
+<span>def <span class="ident">print_to_file</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.print_to_file_GPT"><code class="name flex">
+<span>def <span class="ident">print_to_file_GPT</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.readXDATCAR"><code class="name flex">
+<span>def <span class="ident">readXDATCAR</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.read_2D_file"><code class="name flex">
+<span>def <span class="ident">read_2D_file</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.read_sequential_file"><code class="name flex">
+<span>def <span class="ident">read_sequential_file</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.resort"><code class="name flex">
+<span>def <span class="ident">resort</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.sortMatrixbyCols"><code class="name flex">
+<span>def <span class="ident">sortMatrixbyCols</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.sorting_order"><code class="name flex">
+<span>def <span class="ident">sorting_order</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+<dt id="ctoolkit.tools.randomTools.randomTools.vector_of_norms"><code class="name flex">
+<span>def <span class="ident">vector_of_norms</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inner1(*args, **kwargs):
+
+    # storing time before function execution
+    begin = time.time()
+
+    val = func(*args, **kwargs)
+
+    # storing time after function execution
+    end = time.time()
+    timer_name = func.__name__
+    timer_time = end-begin
+    if timer_name in timers_dict:
+        timers_dict[timer_name] += timer_time
+    else:
+        timers_dict[timer_name] = timer_time
+
+    return val</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="ctoolkit.tools" href="index.html">ctoolkit.tools</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="ctoolkit.tools.randomTools.randomTools" href="#ctoolkit.tools.randomTools.randomTools">randomTools</a></code></h4>
+<ul class="">
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.blow_3dvecs" href="#ctoolkit.tools.randomTools.randomTools.blow_3dvecs">blow_3dvecs</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.cat_lammps_trajectories" href="#ctoolkit.tools.randomTools.randomTools.cat_lammps_trajectories">cat_lammps_trajectories</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.flatten_3dvecs" href="#ctoolkit.tools.randomTools.randomTools.flatten_3dvecs">flatten_3dvecs</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.floatrange" href="#ctoolkit.tools.randomTools.randomTools.floatrange">floatrange</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.group_coherence_test" href="#ctoolkit.tools.randomTools.randomTools.group_coherence_test">group_coherence_test</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.linearfit" href="#ctoolkit.tools.randomTools.randomTools.linearfit">linearfit</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.molecule_finder" href="#ctoolkit.tools.randomTools.randomTools.molecule_finder">molecule_finder</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.movie_from_images" href="#ctoolkit.tools.randomTools.randomTools.movie_from_images">movie_from_images</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.multiaverage" href="#ctoolkit.tools.randomTools.randomTools.multiaverage">multiaverage</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.normalize_vector_set" href="#ctoolkit.tools.randomTools.randomTools.normalize_vector_set">normalize_vector_set</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.normalize_vectors_MD" href="#ctoolkit.tools.randomTools.randomTools.normalize_vectors_MD">normalize_vectors_MD</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.plot" href="#ctoolkit.tools.randomTools.randomTools.plot">plot</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.print_sequential_MD_file" href="#ctoolkit.tools.randomTools.randomTools.print_sequential_MD_file">print_sequential_MD_file</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.print_timers" href="#ctoolkit.tools.randomTools.randomTools.print_timers">print_timers</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.print_to_file" href="#ctoolkit.tools.randomTools.randomTools.print_to_file">print_to_file</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.print_to_file_GPT" href="#ctoolkit.tools.randomTools.randomTools.print_to_file_GPT">print_to_file_GPT</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.readXDATCAR" href="#ctoolkit.tools.randomTools.randomTools.readXDATCAR">readXDATCAR</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.read_2D_file" href="#ctoolkit.tools.randomTools.randomTools.read_2D_file">read_2D_file</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.read_sequential_file" href="#ctoolkit.tools.randomTools.randomTools.read_sequential_file">read_sequential_file</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.resort" href="#ctoolkit.tools.randomTools.randomTools.resort">resort</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.sortMatrixbyCols" href="#ctoolkit.tools.randomTools.randomTools.sortMatrixbyCols">sortMatrixbyCols</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.sorting_order" href="#ctoolkit.tools.randomTools.randomTools.sorting_order">sorting_order</a></code></li>
+<li><code><a title="ctoolkit.tools.randomTools.randomTools.vector_of_norms" href="#ctoolkit.tools.randomTools.randomTools.vector_of_norms">vector_of_norms</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

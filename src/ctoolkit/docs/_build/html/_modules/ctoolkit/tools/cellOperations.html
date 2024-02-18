@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ctoolkit.tools.cellOperations &#8212; Crystal Toolkit 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ctoolkit.tools.cellOperations</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">toolkit.global_vars.ext_libs</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="cellOperations">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations">[docs]</a>
+<span class="k">class</span> <span class="nc">cellOperations</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">func3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>   
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">frac_to_cart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">atom_set</span><span class="p">):</span>
+        <span class="n">new_atom_set</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">atom_set</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        
+        <span class="k">return</span> <span class="n">new_atom_set</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">cart_to_frac</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">atom_set</span><span class="p">):</span>
+        <span class="n">Binv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+        <span class="n">new_atom_set</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Binv</span><span class="p">,</span> <span class="n">atom_set</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="k">return</span> <span class="n">new_atom_set</span>
+
+<div class="viewcode-block" id="cellOperations.rigid_displacement">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations.rigid_displacement">[docs]</a>
+    <span class="k">def</span> <span class="nf">rigid_displacement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">,</span> <span class="n">structure</span><span class="p">):</span>
+        <span class="n">new_cart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">at_cart</span><span class="p">),</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">new_frac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">),</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="n">disp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">disp</span> <span class="o">+=</span> <span class="n">vector</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">structure</span><span class="o">.</span><span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span>
+
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">at_cart</span><span class="p">)):</span>
+            <span class="n">new_cart</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">at_cart</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">+</span> <span class="n">disp</span><span class="p">)</span>
+            
+        <span class="n">structure</span><span class="o">.</span><span class="n">at_cart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">new_cart</span><span class="p">)</span>
+        <span class="n">structure</span><span class="o">.</span><span class="n">recalculate_poscar</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="cellOperations.apply_rotation">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations.apply_rotation">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_rotation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># The idea: </span>
+        <span class="c1"># We want to rotate a group of atoms. The positions</span>
+        <span class="c1"># of the atoms are given as vectors from the crystallographic</span>
+        <span class="c1"># origin of coordinates. Thus what we want to do is:</span>
+        <span class="c1">#   move origin -&gt; apply rotation along given axis -&gt; go back to crystal. origin</span>
+
+        <span class="c1"># We use the tensorial form of the rotation operator</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">axis</span><span class="p">)))</span>
+        <span class="n">cross</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">cart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">.0</span><span class="p">,</span> <span class="mf">.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">.0</span><span class="p">,</span> <span class="mf">.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">cart</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">cross</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">cart</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">cross</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">axis</span><span class="p">))</span>
+
+        <span class="c1"># Now we move the origin, compute, and go back to the crystal. origin. All packed.</span>
+        <span class="k">if</span> <span class="n">origin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">origin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">vector</span> <span class="o">-</span> <span class="n">origin</span><span class="p">)</span> <span class="o">+</span> <span class="n">origin</span></div>
+
+        
+<div class="viewcode-block" id="cellOperations.rigid_rotation">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations.rigid_rotation">[docs]</a>
+    <span class="k">def</span> <span class="nf">rigid_rotation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector_list</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vector_list</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_rotation</span><span class="p">(</span><span class="n">vector_list</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">origin</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">veclist</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vector_list</span><span class="p">)):</span>
+                <span class="n">veclist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">apply_rotation</span><span class="p">(</span><span class="n">vector_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">angle</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">origin</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">veclist</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cellOperations.new_supercell_VASP">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations.new_supercell_VASP">[docs]</a>
+    <span class="k">def</span> <span class="nf">new_supercell_VASP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">VASP_struct</span><span class="p">):</span>
+        <span class="n">new_VASP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_structure</span><span class="p">(</span><span class="n">VASP_struct</span><span class="p">)</span>
+        <span class="c1"># Objects can be different...</span>
+
+        <span class="n">new_structure</span> <span class="o">=</span> <span class="n">new_VASP</span><span class="o">.</span><span class="n">POSCAR</span>
+        <span class="n">new_structure</span><span class="o">.</span><span class="n">at_frac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">VASP_struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_frac</span><span class="p">),</span> <span class="mi">3</span><span class="p">])</span>
+        <span class="n">ct_atom</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">ct2</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">new_structure</span><span class="o">.</span><span class="n">namelist</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
+        <span class="n">new_structure</span><span class="o">.</span><span class="n">atom_id</span> <span class="o">=</span>  <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">specie_id</span><span class="p">,</span> <span class="n">specie</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">VASP_struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+            <span class="n">new_structure</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">[</span><span class="n">specie_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">VASP_struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">[</span><span class="n">specie_id</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">VASP_struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">[</span><span class="n">specie_id</span><span class="p">]):</span>
+            <span class="c1">#for nx, ny, nz in [(nx, ny, nz) for nx in range(N[0]) for ny in range(N[1]) for nz in range(N[2])]:</span>
+                <span class="c1">#for atom in range(structure.multiplicity[specie_id]):</span>
+                <span class="k">for</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">)</span> <span class="k">for</span> <span class="n">nx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">ny</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">nz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">[</span><span class="mi">2</span><span class="p">])]:</span> <span class="c1">#This inverts how the atoms are printed</span>
+                    <span class="n">Id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+                    <span class="n">cell_vector</span> <span class="o">=</span> <span class="n">nx</span><span class="o">*</span><span class="n">Id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">ny</span><span class="o">*</span><span class="n">Id</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">nz</span><span class="o">*</span><span class="n">Id</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+                    <span class="c1"># Frac coordinates need to be reescaled to the new supercell</span>
+                    <span class="n">temp_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">VASP_struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_frac</span><span class="p">[</span><span class="n">ct2</span><span class="p">]</span> <span class="o">+</span> <span class="n">cell_vector</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                        <span class="n">new_structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">[</span><span class="n">ct_atom</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="n">N</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">new_structure</span><span class="o">.</span><span class="n">namelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">VASP_struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">namelist</span><span class="p">[</span><span class="n">ct2</span><span class="p">])</span>
+                    <span class="n">new_structure</span><span class="o">.</span><span class="n">atom_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">VASP_struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">atom_id</span><span class="p">[</span><span class="n">ct2</span><span class="p">])</span>
+                    <span class="n">ct_atom</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">ct2</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">new_structure</span><span class="o">.</span><span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">VASP_struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="n">new_structure</span><span class="o">.</span><span class="n">at_cart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frac_to_cart</span><span class="p">(</span><span class="n">new_structure</span><span class="o">.</span><span class="n">B</span><span class="p">,</span> <span class="n">new_structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">))</span>
+
+        <span class="n">mult</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">VASP_struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_frac</span><span class="p">))</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">))</span>
+        <span class="n">new_structure</span><span class="o">.</span><span class="n">volume</span> <span class="o">*=</span> <span class="n">mult</span>
+        <span class="c1">#new_structure.energy *= mult</span>
+
+        <span class="k">return</span> <span class="n">new_structure</span></div>
+
+
+<div class="viewcode-block" id="cellOperations.new_supercell">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations.new_supercell">[docs]</a>
+    <span class="k">def</span> <span class="nf">new_supercell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">structure</span><span class="p">):</span>
+        <span class="c1"># We select and divide into smaller functions as a sort of override</span>
+        <span class="k">if</span> <span class="n">structure</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;VASP&#39;</span><span class="p">:</span>
+            <span class="n">new_structure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_supercell_VASP</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">structure</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_structure</span></div>
+
+
+    <span class="c1"># Add atoms given a vector</span>
+<div class="viewcode-block" id="cellOperations.spawn_cell_frac">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations.spawn_cell_frac">[docs]</a>
+    <span class="k">def</span> <span class="nf">spawn_cell_frac</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">,</span> <span class="n">structure</span><span class="p">):</span>
+        <span class="n">new_frac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_frac</span><span class="p">)):</span>
+            <span class="n">new_frac</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">new_frac</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cellOperations.spawn_cell_invfrac">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations.spawn_cell_invfrac">[docs]</a>
+    <span class="k">def</span> <span class="nf">spawn_cell_invfrac</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">,</span> <span class="n">structure</span><span class="p">):</span>
+        <span class="n">new_frac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">)</span>
+        <span class="n">tol</span> <span class="o">=</span> <span class="mf">0.02</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_frac</span><span class="p">)):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            temp_vec = -structure.at_frac[i] + np.array([1,1,1], dtype=float)</span>
+<span class="sd">            # Correct frac on the fly</span>
+<span class="sd">            for i in range(3):</span>
+<span class="sd">                if(np.abs(temp_vec[i]-1.0) &lt; tol):</span>
+<span class="sd">                    temp_vec[i] -= 0.0#1.0</span>
+
+<span class="sd">            #new_frac[i] = temp_vec + np.array(vector, dtype=float)</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="c1"># We go to [-1,-1,-1] and then invert!</span>
+            <span class="n">temp_vec</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+            <span class="c1"># Correct frac on the fly</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">temp_vec</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">):</span>
+                    <span class="n">temp_vec</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">1.0</span>
+
+            <span class="n">new_frac</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_vec</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="c1">#new_frac[i] = np.array(vector, dtype=float)-structure.at_frac[i] + np.array([-1,-1,-1], dtype=float)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">new_frac</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cellOperations.centrosymmetric_supercell_VASP">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations.centrosymmetric_supercell_VASP">[docs]</a>
+    <span class="k">def</span> <span class="nf">centrosymmetric_supercell_VASP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">VASP_structure</span><span class="p">):</span>
+        <span class="n">new_VASP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_structure</span><span class="p">(</span><span class="n">VASP_structure</span><span class="p">)</span>
+        <span class="n">new_structure</span> <span class="o">=</span> <span class="n">new_VASP</span><span class="o">.</span><span class="n">POSCAR</span>
+
+        <span class="c1"># Centrosymmetry requires an atom well located for the origin.</span>
+        <span class="c1"># Thus we need to shift to set the zero (for now experimental)</span>
+        <span class="n">shifted_structure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_structure</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span><span class="o">.</span><span class="n">POSCAR</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">shifted_structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">)):</span>
+            <span class="n">shifted_structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">cells</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        for i, j in [(i,j) for i in range(2) for j in range(2)]:</span>
+<span class="sd">            cells.append(self.spawn_cell_frac([i,j,0], shifted_structure))</span>
+<span class="sd">        for i, j in [(i,j) for i in range(2) for j in range(2)]:</span>
+<span class="sd">            cells.append(self.spawn_cell_invfrac([i,j,1], shifted_structure))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Test: only 2 cells</span>
+        <span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spawn_cell_frac</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">shifted_structure</span><span class="p">))</span>
+        <span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spawn_cell_invfrac</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">shifted_structure</span><span class="p">))</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">ct2</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">new_structure</span><span class="o">.</span><span class="n">at_frac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">),</span> <span class="mi">3</span><span class="p">])</span>
+        <span class="n">new_structure</span><span class="o">.</span><span class="n">namelist</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
+        <span class="n">new_structure</span><span class="o">.</span><span class="n">atom_id</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">specie_id</span><span class="p">,</span> <span class="n">specie</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+            <span class="n">new_structure</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">[</span><span class="n">specie_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">[</span><span class="n">specie_id</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">[</span><span class="n">specie_id</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">cells</span><span class="p">:</span>
+                    <span class="c1"># Frac coordinates need to be reescaled to the new supercell</span>
+                    <span class="n">temp_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="n">ct2</span><span class="p">])</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                        <span class="n">new_structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">[</span><span class="n">ct</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="n">N</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">new_structure</span><span class="o">.</span><span class="n">atom_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">atom_id</span><span class="p">[</span><span class="n">ct2</span><span class="p">])</span>
+                    <span class="n">new_structure</span><span class="o">.</span><span class="n">namelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">namelist</span><span class="p">[</span><span class="n">ct2</span><span class="p">])</span>
+                    <span class="n">ct</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">ct2</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">new_structure</span><span class="o">.</span><span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="n">new_structure</span><span class="o">.</span><span class="n">at_cart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frac_to_cart</span><span class="p">(</span><span class="n">new_structure</span><span class="o">.</span><span class="n">B</span><span class="p">,</span> <span class="n">new_structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">))</span>
+
+        <span class="n">mult</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">VASP_struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_frac</span><span class="p">))</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">))</span>
+        <span class="n">new_structure</span><span class="o">.</span><span class="n">volume</span> <span class="o">*=</span> <span class="n">mult</span>
+        <span class="n">new_structure</span><span class="o">.</span><span class="n">energy</span> <span class="o">*=</span> <span class="n">mult</span>
+
+        <span class="k">return</span> <span class="n">new_structure</span></div>
+
+
+<div class="viewcode-block" id="cellOperations.centrosymmetric_supercell">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations.centrosymmetric_supercell">[docs]</a>
+    <span class="k">def</span> <span class="nf">centrosymmetric_supercell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">):</span>
+        <span class="c1"># We select and divide into smaller functions as a sort of override</span>
+        <span class="k">if</span> <span class="n">structure</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;VASP&#39;</span><span class="p">:</span>
+            <span class="n">new_structure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_supercell_VASP</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">structure</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_structure</span></div>
+
+
+<div class="viewcode-block" id="cellOperations.interpolate_structures_VASP">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations.interpolate_structures_VASP">[docs]</a>
+    <span class="k">def</span> <span class="nf">interpolate_structures_VASP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">struct1</span><span class="p">,</span> <span class="n">struct2</span><span class="p">,</span> <span class="n">num_images</span><span class="p">):</span>
+        <span class="n">structures</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">struct1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_images</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># Load structure + cleanup of frac coordinates</span>
+            <span class="n">new_VASP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_structure</span><span class="p">(</span><span class="n">struct1</span><span class="p">)</span>
+            <span class="n">new_structure</span> <span class="o">=</span> <span class="n">new_VASP</span><span class="o">.</span><span class="n">POSCAR</span>
+            <span class="n">new_structure</span><span class="o">.</span><span class="n">frac_image_sniper</span><span class="p">()</span>
+            <span class="c1"># Linear interpolation of cell &amp; frac &amp; cart</span>
+
+            <span class="n">new_structure</span><span class="o">.</span><span class="n">B</span> <span class="o">=</span> <span class="n">struct1</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">B</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">num_images</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">struct2</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">B</span><span class="o">-</span><span class="n">struct1</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>
+            <span class="n">new_structure</span><span class="o">.</span><span class="n">at_frac</span> <span class="o">=</span> <span class="n">struct1</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_frac</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">num_images</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">struct2</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_frac</span><span class="o">-</span><span class="n">struct1</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_frac</span><span class="p">)</span>
+            <span class="c1"># Could put a control for running images here</span>
+            <span class="n">new_structure</span><span class="o">.</span><span class="n">at_cart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frac_to_cart</span><span class="p">(</span><span class="n">new_structure</span><span class="o">.</span><span class="n">B</span><span class="p">,</span> <span class="n">new_structure</span><span class="o">.</span><span class="n">at_frac</span><span class="p">)</span><span class="c1">#struct1.at_cart + float(i/(num_images+2))*(struct2.at_cart-struct1.at_cart)</span>
+            <span class="c1"># Probably useless or troublesome:</span>
+            <span class="n">new_structure</span><span class="o">.</span><span class="n">frac_image_sniper</span><span class="p">()</span>
+            <span class="n">structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_VASP</span><span class="p">)</span>
+
+        <span class="n">structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">struct2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">structures</span></div>
+
+
+<div class="viewcode-block" id="cellOperations.interpolate_structures">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations.interpolate_structures">[docs]</a>
+    <span class="k">def</span> <span class="nf">interpolate_structures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">struct1</span><span class="p">,</span> <span class="n">struct2</span><span class="p">,</span> <span class="n">num_images</span><span class="p">):</span>
+        <span class="c1"># We select and divide into smaller functions as a sort of override</span>
+        <span class="k">if</span> <span class="n">struct1</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">struct2</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error! Structures in different format. Transform them first!&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+            <span class="c1"># Attempt conversion</span>
+            <span class="c1">#print(&#39;Attempting to unify types...&#39;)</span>
+            <span class="c1">#struct1 = self.transform_type(struct1, struct2.type)</span>
+            <span class="c1">#print(&quot;Successfully transformed type of structure 1 (%s) into %s!&quot; % (struct1.type, struct2.type))</span>
+
+        <span class="k">if</span> <span class="n">struct1</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;VASP&#39;</span><span class="p">:</span>
+           <span class="n">structures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolate_structures_VASP</span><span class="p">(</span><span class="n">struct1</span><span class="p">,</span> <span class="n">struct2</span><span class="p">,</span> <span class="n">num_images</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">structures</span></div>
+
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">find_firstneighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom</span><span class="p">,</span> <span class="n">satellites</span><span class="p">,</span> <span class="n">basis</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">satellites</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">tol</span> <span class="o">=</span> <span class="mi">20</span> <span class="c1"># in percentage</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">satellites</span><span class="p">)):</span>
+            <span class="n">best_transform</span><span class="p">,</span> <span class="n">transform_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">findBestPairPeriodic</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">satellites</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">basis</span><span class="p">)</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">atom</span><span class="o">-</span><span class="n">best_transform</span><span class="p">,</span> <span class="n">atom</span><span class="o">-</span><span class="n">best_transform</span><span class="p">))</span>
+            <span class="c1"># We exclude the &quot;self&quot; atom</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">dist</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1E5</span>
+        <span class="c1">#print(np.sort(d)) </span>
+        <span class="n">min_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">list_neighbors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">satellites</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">min_dist</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">tol</span><span class="o">/</span><span class="mi">100</span><span class="p">):</span>
+                <span class="c1">#print(i, d[i], min_dist*(1+tol/100))</span>
+                <span class="n">list_neighbors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">list_neighbors</span>
+
+<div class="viewcode-block" id="cellOperations.find_full_molecules">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations.find_full_molecules">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_full_molecules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">struct</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">satellite</span><span class="p">,</span> <span class="n">num_neighbors</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">center_atoms</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">filter_atoms</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+        <span class="n">sat_atoms</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">filter_atoms</span><span class="p">(</span><span class="n">satellite</span><span class="p">)</span>
+        <span class="n">all_atoms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">at_cart</span><span class="p">)</span>
+
+        <span class="n">center_atoms_list</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">filter_atoms_list</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+        <span class="n">sat_atoms_list</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">filter_atoms_list</span><span class="p">(</span><span class="n">satellite</span><span class="p">)</span>
+
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">nice_molecules</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">center_atoms</span><span class="p">)):</span>
+            <span class="n">nice_molecule</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">sat_atom_neighbors</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">list_neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_firstneighbors</span><span class="p">(</span><span class="n">center_atoms</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sat_atoms</span><span class="p">,</span> <span class="n">struct</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">list_neighbors</span><span class="p">:</span>
+                <span class="n">sat_atom_neighbors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sat_atoms_list</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">num_neighbors</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># center atom new first neighbors</span>
+                <span class="n">cfn_bulk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_firstneighbors</span><span class="p">(</span><span class="n">center_atoms</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">all_atoms</span><span class="p">,</span> <span class="n">struct</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>
+                <span class="n">cfn_list</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">cfn</span> <span class="ow">in</span> <span class="n">cfn_bulk</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">((</span><span class="n">cfn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">center_atoms_list</span><span class="p">)</span> <span class="ow">and</span>
+                        <span class="p">(</span><span class="n">cfn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sat_atom_neighbors</span><span class="p">)):</span>
+                        <span class="n">cfn_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cfn</span><span class="p">)</span>
+
+                <span class="c1"># find the first neighbors of every satellite</span>
+                <span class="n">sfn_list_col</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">sat_atom_neighbors</span><span class="p">:</span>
+                    <span class="n">sfn_bulk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_firstneighbors</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">at_cart</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">all_atoms</span><span class="p">,</span> <span class="n">struct</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>
+                    <span class="n">sfn_list</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">sfn</span> <span class="ow">in</span> <span class="n">sfn_bulk</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="p">((</span><span class="n">sfn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">center_atoms_list</span><span class="p">)</span> <span class="ow">and</span> 
+                            <span class="p">(</span><span class="n">sfn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sat_atom_neighbors</span><span class="p">)</span> <span class="ow">and</span>
+                            <span class="p">(</span><span class="n">sfn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cfn_list</span><span class="p">)):</span> 
+                            <span class="n">sfn_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sfn</span><span class="p">)</span>
+
+                    <span class="n">sfn_list_col</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sfn_list</span><span class="p">)</span>
+                 
+                <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">center_atoms_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sat_atom_neighbors</span><span class="p">,</span> <span class="n">cfn_list</span><span class="p">,</span> <span class="n">sfn_list_col</span><span class="p">])</span>
+                <span class="n">nice_molecule</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">center_atoms_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">sat</span> <span class="ow">in</span> <span class="n">sat_atom_neighbors</span><span class="p">:</span> <span class="n">nice_molecule</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sat</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">cfn</span> <span class="ow">in</span> <span class="n">cfn_list</span><span class="p">:</span> <span class="n">nice_molecule</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cfn</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">sfn</span> <span class="ow">in</span> <span class="n">sfn_list</span><span class="p">:</span> <span class="n">nice_molecule</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sfn</span><span class="p">)</span>
+                <span class="n">nice_molecules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nice_molecule</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">center_atoms_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sat_atom_neighbors</span><span class="p">])</span>
+
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%3.3f%%</span><span class="se">\r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">center_atoms</span><span class="p">)))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">groups</span><span class="p">,</span> <span class="n">nice_molecules</span></div>
+
+
+    <span class="c1"># Find groups of atoms between the CENTER</span>
+    <span class="c1"># of the interaction and the SATELLITE possible</span>
+    <span class="c1"># atoms belonging to a particular species</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">find_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">struct</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">satellite</span><span class="p">,</span> <span class="n">excludeSatList</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="n">center_atoms</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">filter_atoms</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+        <span class="n">sat_atoms</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">filter_atoms</span><span class="p">(</span><span class="n">satellite</span><span class="p">,</span> <span class="n">excludeSatList</span><span class="o">=</span><span class="n">excludeSatList</span><span class="p">)</span>
+        <span class="n">center_atoms_list</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">filter_atoms_list</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+        <span class="n">sat_atoms_list</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">filter_atoms_list</span><span class="p">(</span><span class="n">satellite</span><span class="p">,</span> <span class="n">excludeSatList</span><span class="o">=</span><span class="n">excludeSatList</span><span class="p">)</span>
+        <span class="c1">#print(len(sat_atoms), len(sat_atoms_list))</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">center_atoms</span><span class="p">)):</span>
+            <span class="n">sat_atom_neighbors</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">list_neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_firstneighbors</span><span class="p">(</span><span class="n">center_atoms</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sat_atoms</span><span class="p">,</span> <span class="n">struct</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">list_neighbors</span><span class="p">:</span>
+                <span class="n">sat_atom_neighbors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sat_atoms_list</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">center_atoms_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sat_atom_neighbors</span><span class="p">])</span>
+            
+            <span class="c1">#sys.stdout.write(&quot;%3.3f%%\r&quot; % (100*(i+1)/len(center_atoms)))</span>
+            <span class="c1">#sys.stdout.flush()</span>
+
+        <span class="k">return</span> <span class="n">groups</span>
+
+    <span class="c1"># Sometimes atoms go out of the simulation box. Bound box. Whatever.</span>
+    <span class="c1"># And sometimes we want them out to understand the structure.</span>
+    <span class="c1"># So I add here a wrapper for:</span>
+    <span class="c1">#   1) Application of periodic boundary conditions.</span>
+    <span class="c1">#   2) Unbound atoms.</span>
+    <span class="c1"># The code here works in fractional coordinates. </span>
+    <span class="c1"># You can provide a structure, or a set of atoms,</span>
+    <span class="c1"># or a cartesian set of atoms + basis...</span>
+    <span class="c1"># Or at least, it will do that. For now, at_frac.</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">handle_periodic_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">at_frac</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;bound&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;bound&#39;</span> <span class="ow">or</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;unbound&#39;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PBC handler: using mode &#39;bound&#39; by default (input not recognized)&quot;</span><span class="p">)</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;bound&#39;</span>
+            <span class="c1">#CONTINUE_HERE</span>
+
+    <span class="c1"># This function searches for a periodic image of periodic_atom</span>
+    <span class="c1"># that is the nearest to fixed_atom. Returns the best periodic</span>
+    <span class="c1"># image found, and the key [k_x, k_y, k_z] necessary to transform it.</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">findBestPairPeriodic_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixed_atom</span><span class="p">,</span> <span class="n">periodic_atom</span><span class="p">,</span> <span class="n">basis</span><span class="p">):</span>
+        <span class="n">mindist</span> <span class="o">=</span> <span class="mf">1E3</span>
+        <span class="n">best_transform</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">periodic_atom</span><span class="p">)</span>
+        <span class="n">best_transform_key</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="c1"># We search 1 cell around the boundary</span>
+        <span class="c1"># Maybe we can search in a decomposed way i&gt;j&gt;k?????</span>
+        <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">transform_key</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">best_transform_key</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="n">transform_key</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="n">transformed_atom</span> <span class="o">=</span> <span class="n">periodic_atom</span> <span class="o">+</span> <span class="n">basis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">transform_key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">basis</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">transform_key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">basis</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">transform_key</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">vec</span> <span class="o">=</span> <span class="n">fixed_atom</span><span class="o">-</span><span class="n">transformed_atom</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">vec</span><span class="p">))</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">dist</span><span class="o">-</span><span class="n">mindist</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="n">mindist</span> <span class="o">=</span> <span class="n">dist</span> <span class="o">+</span> <span class="mf">0.0</span>
+                    <span class="n">best_transform</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">transformed_atom</span><span class="p">)</span>
+                    <span class="n">best_transform_key</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+        <span class="k">return</span> <span class="n">best_transform</span><span class="p">,</span> <span class="n">best_transform_key</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">findBestPairPeriodic_GPT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixed_atom</span><span class="p">,</span> <span class="n">periodic_atom</span><span class="p">,</span> <span class="n">basis</span><span class="p">):</span>
+        <span class="n">translations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">*</span><span class="n">basis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">j</span><span class="o">*</span><span class="n">basis</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">k</span><span class="o">*</span><span class="n">basis</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)])</span>
+        <span class="c1">#transformed_atoms = periodic_atom + translations</span>
+        <span class="c1">#print(translations)</span>
+        <span class="n">transformed_atoms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">periodic_atom</span> <span class="o">+</span> <span class="n">translations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">translations</span><span class="p">))])</span>
+        <span class="c1">#print(transformed_atoms)</span>
+        <span class="c1">#vec = fixed_atom - transformed_atoms</span>
+        <span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fixed_atom</span> <span class="o">+</span> <span class="n">transformed_atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">transformed_atoms</span><span class="p">))])</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">min_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
+        <span class="c1">#print(np.min(dist), min_index)</span>
+        <span class="k">return</span> <span class="n">transformed_atoms</span><span class="p">[</span><span class="n">min_index</span><span class="p">],</span> <span class="p">[</span><span class="n">min_index</span><span class="o">//</span><span class="mi">9</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">min_index</span><span class="o">//</span><span class="mi">3</span><span class="p">)</span><span class="o">%</span><span class="mi">3</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">min_index</span><span class="o">%</span><span class="mi">3</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># This function searches for a periodic image of periodic_atom</span>
+    <span class="c1"># that is the nearest to fixed_atom. Returns the best periodic</span>
+    <span class="c1"># image found, and the key [k_x, k_y, k_z] necessary to transform it.</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">findBestPairPeriodic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixed_atom</span><span class="p">,</span> <span class="n">periodic_atom</span><span class="p">,</span> <span class="n">basis</span><span class="p">):</span>
+        <span class="n">mindist</span> <span class="o">=</span> <span class="mf">1E3</span>
+        <span class="n">best_transform</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">periodic_atom</span><span class="p">)</span>
+        <span class="n">transform_key</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># We search 1 cell around the boundar</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        bi, bj, bk = 0, 0, 0</span>
+<span class="sd">        for i in range(-1, 2):</span>
+<span class="sd">            transformed_atom = periodic_atom + basis[0]*float(i) + basis[1]*float(bj) + basis[2]*float(bk)</span>
+<span class="sd">            vec = fixed_atom-transformed_atom</span>
+<span class="sd">            dist = np.sqrt(np.dot(vec, vec))</span>
+<span class="sd">            try:</span>
+<span class="sd">                if (dist-mindist) &lt; 0.0:</span>
+<span class="sd">                    mindist = dist</span>
+<span class="sd">                    best_transform = np.copy(transformed_atom)</span>
+<span class="sd">                    bi = i</span>
+<span class="sd">            except:</span>
+<span class="sd">                print(&quot;IT BROKE! findBestPeriodic doesn&#39;t work well!&quot;, dist, mindist, vec)</span>
+<span class="sd">                sys.exit()</span>
+
+<span class="sd">        for j in range(-1, 2):</span>
+<span class="sd">            transformed_atom = periodic_atom + basis[0]*float(bi) + basis[1]*float(j) + basis[2]*float(bk)</span>
+<span class="sd">            vec = fixed_atom-transformed_atom</span>
+<span class="sd">            dist = np.sqrt(np.dot(vec, vec))</span>
+<span class="sd">            try:</span>
+<span class="sd">                if (dist-mindist) &lt; 0.0:</span>
+<span class="sd">                    mindist = dist</span>
+<span class="sd">                    best_transform = np.copy(transformed_atom)</span>
+<span class="sd">                    bj = j</span>
+<span class="sd">            except:</span>
+<span class="sd">                print(&quot;IT BROKE! findBestPeriodic doesn&#39;t work well!&quot;, dist, mindist, vec)</span>
+<span class="sd">                sys.exit()</span>
+
+<span class="sd">        for k in range(-1, 2):</span>
+<span class="sd">            transformed_atom = periodic_atom + basis[0]*float(bi) + basis[1]*float(bj) + basis[2]*float(k)</span>
+<span class="sd">            vec = fixed_atom-transformed_atom</span>
+<span class="sd">            dist = np.sqrt(np.dot(vec, vec))</span>
+<span class="sd">            try:</span>
+<span class="sd">                if (dist-mindist) &lt; 0.0:</span>
+<span class="sd">                    mindist = dist</span>
+<span class="sd">                    best_transform = np.copy(transformed_atom)</span>
+<span class="sd">                    bk = k</span>
+<span class="sd">            except:</span>
+<span class="sd">                print(&quot;IT BROKE! findBestPeriodic doesn&#39;t work well!&quot;, dist, mindist, vec)</span>
+<span class="sd">                sys.exit()</span>
+
+<span class="sd">        transform_key = [bi, bj, bk]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                    <span class="n">transformed_atom</span> <span class="o">=</span> <span class="n">periodic_atom</span> <span class="o">+</span> <span class="n">basis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="n">basis</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="nb">float</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="n">basis</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="nb">float</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>                
+                    <span class="n">vec</span> <span class="o">=</span> <span class="n">fixed_atom</span><span class="o">-</span><span class="n">transformed_atom</span>
+                    <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">vec</span><span class="p">))</span>
+                    <span class="c1">#print(transformed_atom, dist, mindist, best_transform)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">dist</span><span class="o">-</span><span class="n">mindist</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                            <span class="n">mindist</span> <span class="o">=</span> <span class="n">dist</span>
+                            <span class="n">best_transform</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">transformed_atom</span><span class="p">)</span>
+                            <span class="n">transform_key</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;IT BROKE! findBestPeriodic doesn&#39;t work well!&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">mindist</span><span class="p">,</span> <span class="n">vec</span><span class="p">)</span>
+                        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        
+        <span class="k">return</span> <span class="n">best_transform</span><span class="p">,</span> <span class="n">transform_key</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">atom_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">atom</span> <span class="o">+</span> <span class="n">basis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="nb">float</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">basis</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="nb">float</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">basis</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="nb">float</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="c1"># Function to find pairs of atoms. Input can be in standard .at_frac</span>
+    <span class="c1"># Returns the pair[atom1]=atom2 and the keyring [k_x, k_y, k_z] for the periodic images.</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">find_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms1</span><span class="p">,</span> <span class="n">atoms2</span><span class="p">,</span> <span class="n">box2</span><span class="p">):</span>
+        <span class="n">pair</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms1</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">pair</span><span class="p">[:]</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">mindist_pair</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms1</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">mindist_pair</span><span class="p">[:]</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">keyring</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">listat2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms2</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms1</span><span class="p">)):</span>
+            <span class="n">threshold</span> <span class="o">=</span> <span class="mf">1E3</span> <span class="c1"># This is just an init parameter</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">listat2</span><span class="p">:</span>
+                <span class="n">atoms2periodic</span><span class="p">,</span> <span class="n">transform_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">findBestPairPeriodic_test</span><span class="p">(</span><span class="n">atoms1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">atoms2</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">box2</span><span class="p">)</span>
+                <span class="n">dvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">atoms1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">atoms2periodic</span><span class="p">)</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dvec</span><span class="p">,</span> <span class="n">dvec</span><span class="p">))</span>
+                <span class="c1"># This is unclean but efficient. Basically, checks that the new transformation</span>
+                <span class="c1"># provides a smaller distance between pairs of atoms. Probably can be cleaned.</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">dist</span><span class="o">-</span><span class="n">threshold</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="n">threshold</span> <span class="o">=</span> <span class="n">dist</span> <span class="o">+</span> <span class="mf">0.0</span>
+                    <span class="n">pair</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
+                    <span class="n">best_transform_key</span> <span class="o">=</span> <span class="n">transform_key</span>
+            <span class="k">if</span> <span class="n">pair</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">listat2</span><span class="p">:</span> <span class="n">listat2</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">keyring</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">best_transform_key</span><span class="p">)</span>
+            <span class="n">mindist_pair</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">threshold</span> <span class="o">+</span> <span class="mf">0.0</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">a2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
+            <span class="c1"># This warning should be set to an actual threshold parameter</span>
+            <span class="k">if</span> <span class="n">mindist_pair</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">2.5</span> <span class="ow">and</span> <span class="n">a2</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING with pair </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> min distance: </span><span class="si">%.5f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">mindist_pair</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="c1">#print(&quot;Pair %d %d: %.5f&quot; % (i, a2, mindist_pair[i]), atoms1[i], atoms2[a2], keyring[i]) # DEBUG</span>
+
+        <span class="k">return</span> <span class="n">pair</span><span class="p">,</span> <span class="n">keyring</span>
+
+    <span class="c1"># A quicker function to find keys of known pairs of atoms</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">refresh_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms1</span><span class="p">,</span> <span class="n">atoms2</span><span class="p">,</span> <span class="n">box2</span><span class="p">,</span> <span class="n">pairs</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">at1</span><span class="p">,</span> <span class="n">at2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pairs</span><span class="p">):</span>
+            <span class="n">atoms2periodic</span><span class="p">,</span> <span class="n">transform_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">findBestPairPeriodic_test</span><span class="p">(</span><span class="n">atoms1</span><span class="p">[</span><span class="n">at1</span><span class="p">],</span> <span class="n">atoms2</span><span class="p">[</span><span class="n">at2</span><span class="p">],</span> <span class="n">box2</span><span class="p">)</span>
+            <span class="n">key</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transform_key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">key</span>
+
+    <span class="c1"># Key is for the atom 2.</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">build_vectormap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms1</span><span class="p">,</span> <span class="n">atoms2</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">pairs</span><span class="p">,</span> <span class="n">initial_key</span><span class="p">):</span>
+        <span class="n">vectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms1</span><span class="p">),</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">initial_key</span> <span class="o">+</span> <span class="mf">.0</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pairs</span><span class="p">):</span>
+            <span class="n">atoms2_pos_correction</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">box</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">key</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">key</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">vec</span> <span class="o">=</span> <span class="n">atoms1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">atoms2</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">atoms2_pos_correction</span><span class="p">)</span>
+            <span class="n">vectors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span><span class="n">vec</span><span class="p">)))</span>
+            <span class="c1">#print(d[-1]) </span>
+        <span class="c1"># The tolerance should probably be a parameter</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">2.5</span><span class="p">):</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">refresh_key</span><span class="p">(</span><span class="n">atoms1</span><span class="p">,</span> <span class="n">atoms2</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">pairs</span><span class="p">)</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pairs</span><span class="p">):</span>
+                <span class="n">atoms2_pos_correction</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">box</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">key</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">key</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">vec</span> <span class="o">=</span> <span class="n">atoms1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">atoms2</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">atoms2_pos_correction</span><span class="p">)</span>
+                <span class="n">vectors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">vec</span><span class="p">))</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
+        
+        <span class="c1"># Just a check</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">2.5</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Max distance between atoms is larger than 2.5&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">key</span>
+
+<div class="viewcode-block" id="cellOperations.compute_angles_MD_GPT">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.cellOperations.cellOperations.compute_angles_MD_GPT">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_angles_MD_GPT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">vec_of_vecs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">num_steps</span><span class="p">,</span> <span class="n">num_vecs</span> <span class="o">=</span> <span class="n">vectors</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">e_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">e_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">v_pbc</span> <span class="o">=</span> <span class="n">vectors</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,j-&gt;ij&#39;</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">e_x</span><span class="p">)</span> <span class="o">*</span> <span class="n">e_x</span>
+        <span class="n">v_pab</span> <span class="o">=</span> <span class="n">vectors</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,j-&gt;ij&#39;</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">e_z</span><span class="p">)</span> <span class="o">*</span> <span class="n">e_z</span>
+        <span class="n">norm_vpbc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v_pbc</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">norm_vpab</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v_pab</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">v_pab</span><span class="p">,</span> <span class="n">e_z</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v_pab</span><span class="p">,</span> <span class="n">e_x</span><span class="p">))</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,j-&gt;i&#39;</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">e_z</span><span class="p">)</span> <span class="o">/</span> <span class="n">norm_vpbc</span><span class="p">)</span>
+        <span class="n">ctheta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vec_of_vecs</span><span class="p">:</span>
+            <span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">phi</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">theta</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">angles</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">num_steps</span><span class="p">,</span> <span class="n">num_vecs</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">ctheta</span></div>
+
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">compute_angles_MD</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">vec_of_vecs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">num_steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vectors</span><span class="p">)</span>
+        <span class="n">num_vecs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vectors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">num_steps</span><span class="o">*</span><span class="n">num_vecs</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">num_steps</span><span class="o">*</span><span class="n">num_vecs</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">ctheta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">num_steps</span><span class="o">*</span><span class="n">num_vecs</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="n">e_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)[</span><span class="mi">0</span><span class="p">,:]</span>
+        <span class="n">e_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)[</span><span class="mi">2</span><span class="p">,:]</span>
+        <span class="n">angles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_steps</span><span class="p">):</span>
+            <span class="n">angles_inner</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_vecs</span><span class="p">):</span>
+                <span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">vectors</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])</span>
+
+                <span class="n">v_pbc</span> <span class="o">=</span> <span class="n">vec</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">e_x</span><span class="p">)</span><span class="o">*</span><span class="n">e_x</span>
+                <span class="n">v_pab</span> <span class="o">=</span> <span class="n">vec</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">e_z</span><span class="p">)</span><span class="o">*</span><span class="n">e_z</span>
+                <span class="n">norm_vpbc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v_pbc</span><span class="p">,</span> <span class="n">v_pbc</span><span class="p">))</span>
+                <span class="n">norm_vpab</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v_pab</span><span class="p">,</span> <span class="n">v_pab</span><span class="p">))</span>
+                <span class="c1"># Angles = [\phi, \theta]</span>
+                <span class="n">phi</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">num_vecs</span><span class="o">+</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_angle_full</span><span class="p">(</span><span class="n">e_x</span><span class="p">,</span> <span class="n">v_pab</span><span class="o">/</span><span class="n">norm_vpab</span><span class="p">,</span> <span class="n">e_z</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.0</span>
+                <span class="n">theta</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">num_vecs</span><span class="o">+</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_angle</span><span class="p">(</span><span class="n">e_z</span><span class="p">,</span> <span class="n">vec</span><span class="p">)</span><span class="c1">#angle(e_z, v_pbc/norm_vpbc, e_x) + 0.0</span>
+                <span class="n">ctheta</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">num_vecs</span><span class="o">+</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">num_vecs</span><span class="o">+</span><span class="n">j</span><span class="p">])</span>
+                <span class="n">angles_inner</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">phi</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">num_vecs</span><span class="o">+</span><span class="n">j</span><span class="p">],</span> <span class="n">theta</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">num_vecs</span><span class="o">+</span><span class="n">j</span><span class="p">]])</span>
+            <span class="n">angles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">angles_inner</span><span class="p">)</span>
+
+        <span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">vec_of_vecs</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">ctheta</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">angles</span></div>
+
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Crystal Toolkit</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2024, C. Escorihuela-Sayalero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

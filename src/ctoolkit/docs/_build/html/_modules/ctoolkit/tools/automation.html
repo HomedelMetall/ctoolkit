@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ctoolkit.tools.automation &#8212; Crystal Toolkit 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ctoolkit.tools.automation</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">toolkit.global_vars.ext_libs</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">toolkit.global_vars.tk_lib_VASP</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="c1"># Automated utilities</span>
+<div class="viewcode-block" id="automation">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.automation.automation">[docs]</a>
+<span class="k">class</span> <span class="nc">automation</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+    
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">func2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="c1"># Given a structure of Directories/Subdirectories, where</span>
+    <span class="c1"># each has a tag (for example, N_kbar/MK_run), read</span>
+    <span class="c1"># the contents of files named &quot;filename&quot; and returns:</span>
+    <span class="c1">#   - names: value of the subdirectory name, assuming it&#39;s linked to a physical property and its an integer</span>
+    <span class="c1">#   - dataset: sets of the data stored in the &quot;filename&quot; file</span>
+    <span class="c1">#   - rootdirs: supertag directory names</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">read_file_study</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">supertag</span><span class="o">=</span><span class="s1">&#39;kbar&#39;</span><span class="p">,</span> <span class="n">subtag</span><span class="o">=</span><span class="s1">&#39;run&#39;</span><span class="p">):</span>
+        <span class="n">dirlist</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">))</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">rootdirs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># If we create a decider here for no subtag case, we can turn the function</span>
+        <span class="c1"># into a 1-dirlevel study processing tool too.</span>
+        <span class="k">for</span> <span class="n">dirs</span> <span class="ow">in</span> <span class="n">dirlist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">supertag</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dirs</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">subdirlist</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="o">+</span><span class="n">dirs</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="p">))</span>
+                <span class="n">subdataset</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">subnames</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">subdirs</span> <span class="ow">in</span> <span class="n">subdirlist</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">subtag</span> <span class="ow">in</span> <span class="n">subdirs</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dirs</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">subdirs</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dirs</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">subdirs</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">filename</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_2D_file</span><span class="p">(</span><span class="n">dirs</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">subdirs</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">filename</span><span class="p">)</span>
+                        <span class="n">subdataset</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                        <span class="c1"># Assuming the subtag is about integer temperatures...</span>
+                        <span class="n">T</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[\d.]+&#39;</span><span class="p">,</span> <span class="n">subdirs</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="n">subnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+
+                <span class="c1"># Datalength consistency check</span>
+                <span class="n">flag</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="c1"># Just a patch that assumes that first calculation is fine</span>
+                <span class="n">incompatible_sets</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">subdataset</span><span class="p">)):</span>
+                    <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">subdataset</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">subdataset</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                        <span class="n">flag</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">incompatible_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">flag</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">incompatible_sets</span><span class="p">:</span>
+                        <span class="k">del</span> <span class="n">subnames</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="k">del</span> <span class="n">subdataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                <span class="n">sord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorting_order</span><span class="p">(</span><span class="n">subnames</span><span class="p">)</span>
+                <span class="n">ssubnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resort</span><span class="p">(</span><span class="n">subnames</span><span class="p">,</span> <span class="n">sord</span><span class="p">)</span>
+                <span class="n">ssubdataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resort</span><span class="p">(</span><span class="n">subdataset</span><span class="p">,</span> <span class="n">sord</span><span class="p">)</span>
+
+                <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ssubnames</span><span class="p">)</span>
+                <span class="n">dataset</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ssubdataset</span><span class="p">))</span>
+                <span class="n">rootdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dirs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">names</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">rootdirs</span>
+
+    <span class="nd">@calculate_time</span>    
+    <span class="k">def</span> <span class="nf">structs_from_MD</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">MDtrajdict</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">mult</span><span class="p">):</span>
+        <span class="n">num_snaps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">MDtrajdict</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">])</span>
+        <span class="n">VASPstructs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_snaps</span><span class="p">):</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%3d</span><span class="s1">/</span><span class="si">%d</span><span class="se">\r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">num_snaps</span><span class="p">))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="n">struct</span> <span class="o">=</span> <span class="n">VASP</span><span class="p">()</span>
+            <span class="c1"># Fill poscar</span>
+            <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">MDtrajdict</span><span class="p">[</span><span class="s1">&#39;basis&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">alat</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">names</span>
+            <span class="n">mult</span> <span class="o">=</span> <span class="n">mult</span>
+            <span class="n">atoms_frac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">MDtrajdict</span><span class="p">[</span><span class="s1">&#39;frac_positions&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">generate_poscar</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">alat</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">atoms_frac</span><span class="p">,</span> <span class="n">system_name</span><span class="o">=</span><span class="s1">&#39;Generated by the Crystal Toolkit&#39;</span><span class="p">)</span>
+            <span class="n">VASPstructs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">struct</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">VASPstructs</span>
+
+    <span class="c1"># A way to load XDATCAR info for constant lattice parameter simulations.</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">loadVASPMD</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_directory</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">structures</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Automatic load of VASP Molecular Dynamics nvt...&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># We asume (for simplicity of the case of implementation)</span>
+        <span class="c1"># that the files are called &quot;XDATCARN&quot;, where N is the number that</span>
+        <span class="c1"># orders the files. So we figure this out first:</span>
+        <span class="n">num_items</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">sim_directory</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">sim_directory</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">filename</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_items</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fileExists</span><span class="p">(</span><span class="n">sim_directory</span> <span class="o">+</span> <span class="s1">&#39;/XDATCAR</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sim_directory</span> <span class="o">+</span> <span class="s1">&#39;/XDATCAR</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+
+        <span class="c1"># In order to load the structures, I believe that what is probably more memory costly</span>
+        <span class="c1"># but simpler is to create one VASP structure per snapshot. It will be clearer, otherwise</span>
+        <span class="c1"># we have to modify the main class VASP so that it can contain several snapshots.</span>
+        <span class="c1"># Therefore, we read first the XDATCARs</span>
+
+        <span class="n">MD_traj_frac</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reading </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+            <span class="n">basis</span><span class="p">,</span> <span class="n">at_frac</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readXDATCAR</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">at_frac</span><span class="p">)):</span>
+                <span class="n">MD_traj_frac</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">at_frac</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="n">MD_traj_frac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">MD_traj_frac</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+
+        <span class="c1"># We now load the POSCAR of the folder over a dummy VASP structure</span>
+        <span class="c1"># And we span the all the new structures as copies of it</span>
+        <span class="c1"># In case things have been generated with PHONOPY, we also look for POSCARini</span>
+        
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">sim_directory</span> <span class="o">+</span> <span class="s1">&#39;/POSCAR&#39;</span><span class="p">):</span>
+            <span class="n">POSCAR</span> <span class="o">=</span> <span class="n">sim_directory</span> <span class="o">+</span> <span class="s1">&#39;/POSCAR&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">POSCAR</span> <span class="o">=</span> <span class="n">sim_directory</span> <span class="o">+</span> <span class="s1">&#39;/POSCARini&#39;</span>
+        
+        <span class="n">vaspDUM</span> <span class="o">=</span> <span class="n">VASP</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileExists</span><span class="p">(</span><span class="n">POSCAR</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">vaspDUM</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">read_poscar</span><span class="p">(</span><span class="n">POSCAR</span><span class="p">)</span>
+        <span class="c1">#vaspDUM.POSCAR.generate_poscar(B=basis, alat=1.0, names=sorted_namelist, mult=sorted_num_atoms, atoms_frac=sorted_atoms_frac[0])</span>
+        <span class="n">MD_structures</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">MD_traj_frac</span><span class="p">)):</span>
+            <span class="n">new_struct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_structure</span><span class="p">(</span><span class="n">vaspDUM</span><span class="p">)</span>
+            <span class="n">MD_structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_struct</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generating </span><span class="si">%d</span><span class="s2"> structures...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">MD_traj_frac</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">struct</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">MD_structures</span><span class="p">):</span>
+            <span class="n">struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_cart</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">frac_to_cart</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">B</span><span class="p">,</span> <span class="n">MD_traj_frac</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">recalculate_poscar</span><span class="p">()</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%3.2f%%</span><span class="se">\r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">MD_traj_frac</span><span class="p">)))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        
+        <span class="c1"># This is cool, but not enough. There can&#39;t be a good way of setting up image sniper tools with a system</span>
+        <span class="c1"># that can rotate.</span>
+
+        <span class="c1"># Instead, we standarize the periodic images to be always &quot;near&quot; each other. No big jumps. I.e., if</span>
+        <span class="c1"># an atom crosses more than half a unit cell in a whim, it&#39;s probably needing correction.</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Standarizing </span><span class="si">%d</span><span class="s2"> structures...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">MD_traj_frac</span><span class="p">)))</span>
+        <span class="n">std_MD</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">standarizeMDVASP</span><span class="p">(</span><span class="n">MD_structures</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">std_MD</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">standarizeMDVASP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structs</span><span class="p">):</span>
+        <span class="n">tol</span> <span class="o">=</span> <span class="mf">0.85</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">structs</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">frac_disp</span> <span class="o">=</span> <span class="n">structs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_frac</span> <span class="o">-</span> <span class="n">structs</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_frac</span>
+            <span class="n">structs</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_frac</span><span class="p">[</span><span class="n">frac_disp</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">tol</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">1.0</span>
+            <span class="n">structs</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_frac</span><span class="p">[</span><span class="n">frac_disp</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1.0</span>
+            <span class="n">structs</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_cart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frac_to_cart</span><span class="p">(</span><span class="n">structs</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">B</span><span class="p">,</span> <span class="n">structs</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_frac</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">structs</span>
+
+    <span class="c1"># Automatic load of VASP structures. It also</span>
+    <span class="c1"># detects and processes the properties that</span>
+    <span class="c1"># can be extracted from it</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">loadVASPStructs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirlist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">structures</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Automatic load of VASP calculations...&#39;</span><span class="p">)</span>
+        <span class="c1"># The user may input their own list of directories to load...</span>
+        <span class="k">if</span> <span class="n">dirlist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">VASPdirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCalculationDirs</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">VASPdirs</span> <span class="o">=</span> <span class="n">dirlist</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading...&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">dirs</span> <span class="ow">in</span> <span class="n">VASPdirs</span><span class="p">:</span>
+            <span class="n">vaspNow</span> <span class="o">=</span> <span class="n">VASP</span><span class="p">()</span>
+            <span class="n">POSCAR</span> <span class="o">=</span> <span class="n">dirs</span> <span class="o">+</span> <span class="s1">&#39;/POSCAR&#39;</span>
+            <span class="n">CONTCAR</span> <span class="o">=</span> <span class="n">dirs</span> <span class="o">+</span> <span class="s1">&#39;/CONTCAR&#39;</span>
+            <span class="n">OUTCAR</span> <span class="o">=</span> <span class="n">dirs</span> <span class="o">+</span> <span class="s1">&#39;/OUTCAR&#39;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileExists</span><span class="p">(</span><span class="n">POSCAR</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">vaspNow</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">read_poscar</span><span class="p">(</span><span class="n">POSCAR</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileExists</span><span class="p">(</span><span class="n">CONTCAR</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">vaspNow</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">read_poscar</span><span class="p">(</span><span class="n">CONTCAR</span><span class="p">)</span>
+            <span class="c1"># Load all properties available from OUTCAR</span>
+            <span class="n">props</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BC&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;AllE&#39;</span><span class="p">,</span> <span class="s1">&#39;AllV&#39;</span><span class="p">]</span>
+            <span class="n">propsDic</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;BC&#39;</span> <span class="p">:</span> <span class="s1">&#39;Born effective charges&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span> <span class="p">:</span> <span class="s1">&#39;Energy&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span> <span class="p">:</span> <span class="s1">&#39;Volume&#39;</span><span class="p">,</span> <span class="s1">&#39;AllE&#39;</span> <span class="p">:</span> <span class="s1">&#39;Energy trajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;AllV&#39;</span> <span class="p">:</span> <span class="s1">&#39;Volume trajectory&#39;</span><span class="p">}</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileExists</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">props_okay</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">props</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">vaspNow</span><span class="o">.</span><span class="n">outcar</span><span class="o">.</span><span class="n">extract_data</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span>
+                        <span class="n">props_okay</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+            <span class="n">structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vaspNow</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">vaspNow</span><span class="o">.</span><span class="n">getStatus</span><span class="p">()[</span><span class="s1">&#39;POSCAR&#39;</span><span class="p">]):</span> <span class="n">POSCAR_status</span><span class="o">=</span><span class="s1">&#39;OK&#39;</span>
+            <span class="k">else</span><span class="p">:</span> <span class="n">POSCAR_status</span> <span class="o">=</span> <span class="s1">&#39;not read&#39;</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">vaspNow</span><span class="o">.</span><span class="n">getStatus</span><span class="p">()[</span><span class="s1">&#39;OUTCAR&#39;</span><span class="p">]):</span> 
+                <span class="n">OUTCAR_status</span><span class="o">=</span><span class="s1">&#39;OK&#39;</span>
+                <span class="n">OUTCAR_tags</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">prop</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">props_okay</span><span class="p">):</span>
+                    <span class="n">OUTCAR_tags</span> <span class="o">+=</span> <span class="n">prop</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">props_okay</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                        <span class="n">OUTCAR_tags</span> <span class="o">+=</span> <span class="s1">&#39;, &#39;</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="si">%10s</span><span class="s1"> loaded! POSCAR </span><span class="si">%s</span><span class="s1"> (V=</span><span class="si">%.3f</span><span class="s1">). OUTCAR </span><span class="si">%s</span><span class="s1"> (V=</span><span class="si">%.3f</span><span class="s1">). Read from OUTCAR: </span><span class="si">%s</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dirs</span><span class="p">,</span> <span class="n">POSCAR_status</span><span class="p">,</span> <span class="n">vaspNow</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">volume</span><span class="p">,</span> <span class="n">OUTCAR_status</span><span class="p">,</span> <span class="n">vaspNow</span><span class="o">.</span><span class="n">outcar</span><span class="o">.</span><span class="n">volume</span><span class="p">,</span> <span class="n">OUTCAR_tags</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="si">%10s</span><span class="s1"> loaded! POSCAR </span><span class="si">%s</span><span class="s1"> (V=</span><span class="si">%.3f</span><span class="s1">). OUTCAR not read.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dirs</span><span class="p">,</span> <span class="n">POSCAR_status</span><span class="p">,</span> <span class="n">vaspNow</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">volume</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">structures</span>
+
+    <span class="c1"># Only 1 variable studies for now</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">createStudyVASP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">structures</span><span class="p">,</span> <span class="n">dirheader</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">launch_command</span><span class="o">=</span><span class="s1">&#39;echo pwd&#39;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Preparing directories for study...&#39;</span><span class="p">)</span>
+        <span class="n">dirnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spanDirs</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">dirheader</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">copyBASEdir</span><span class="p">(</span><span class="n">dirnames</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please, setup correctly the environment and try again.&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">dirname</span> <span class="ow">in</span> <span class="n">dirnames</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;INPUT_BASE copied&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">struct</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">structures</span><span class="p">):</span>
+            <span class="n">struct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">write_frac</span><span class="p">(</span><span class="n">dirnames</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/POSCAR&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createSimLauncher</span><span class="p">(</span><span class="n">dirnames</span><span class="p">,</span> <span class="n">launch_command</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Study launcher ready! Hit the magic button:</span><span class="se">\n\t</span><span class="s1">$ bash launcher.sh&#39;</span><span class="p">)</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">createSimLauncher</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directories</span><span class="p">,</span> <span class="n">launch_command</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;#!/bin/bash</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;for dir in &#39;</span>
+        <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">directories</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">%10s</span><span class="s1"> &#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;do</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">cd $</span><span class="si">{dir}</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">launch_command</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">cd ../</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;done&#39;</span>
+
+        <span class="n">fopen</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;launcher.sh&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">fopen</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">fopen</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">study_global_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infiles</span><span class="p">,</span> <span class="n">supertag</span><span class="o">=</span><span class="s1">&#39;kbar&#39;</span><span class="p">,</span> <span class="n">subtag</span><span class="o">=</span><span class="s1">&#39;run&#39;</span><span class="p">):</span>
+        <span class="c1"># &#39;infiles&#39; is a list of the filenames to be processed</span>
+        <span class="n">namelist</span><span class="p">,</span> <span class="n">datalist</span><span class="p">,</span> <span class="n">rootlist</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">infiles</span><span class="p">):</span>
+            <span class="n">names</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">rootdirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_file_study</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">supertag</span><span class="p">,</span> <span class="n">subtag</span><span class="p">)</span>
+            <span class="n">namelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+            <span class="n">datalist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>
+            <span class="n">rootlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rootdirs</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Reading files... (</span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2">) </span><span class="se">\r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">infiles</span><span class="p">)))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">infiles</span><span class="p">)):</span>
+           <span class="k">for</span> <span class="n">id_dir</span><span class="p">,</span> <span class="n">dirs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rootlist</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                <span class="c1"># If data contains only one row</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">datalist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">id_dir</span><span class="p">][</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># Initialize this kind of output with the label of the folder as X</span>
+                    <span class="n">dataprint</span> <span class="o">=</span> <span class="p">[</span><span class="n">namelist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">id_dir</span><span class="p">]]</span>
+                    <span class="c1"># Print sequentially all columns of the single row</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">datalist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">id_dir</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,:])):</span>
+                        <span class="n">dataprint</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datalist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">id_dir</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="n">header</span> <span class="o">=</span> <span class="s1">&#39;# X Y</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># If data is a set of XY values, we go into XY1Y2Y3...</span>
+                    <span class="c1"># and use the names of the subfolders as the info line</span>
+                    <span class="n">names</span> <span class="o">=</span> <span class="n">namelist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">id_dir</span><span class="p">]</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;# &#39;</span>
+                    <span class="k">for</span> <span class="n">ni</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)):</span>
+                        <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">%.2f</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">names</span><span class="p">[</span><span class="n">ni</span><span class="p">])</span>
+                    <span class="n">header</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="n">dataprint</span> <span class="o">=</span> <span class="p">[</span><span class="n">datalist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">id_dir</span><span class="p">][</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">0</span><span class="p">]]</span>
+                    
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">namelist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">id_dir</span><span class="p">])):</span>
+                        <span class="n">dataprint</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datalist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">id_dir</span><span class="p">][</span><span class="n">j</span><span class="p">,:,</span><span class="mi">1</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">print_to_file</span><span class="p">(</span><span class="n">dirs</span><span class="o">+</span><span class="s1">&#39;/global_&#39;</span> <span class="o">+</span> <span class="n">infiles</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">dataprint</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Merging files... </span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="se">\r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">infiles</span><span class="p">)))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+    <span class="c1">#sys.stdout.write(&quot;\n&quot;)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Crystal Toolkit</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2024, C. Escorihuela-Sayalero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ctoolkit.tools.physicalProperties &#8212; Crystal Toolkit 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ctoolkit.tools.physicalProperties</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">toolkit.global_vars.ext_libs</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="physicalProperties">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.physicalProperties.physicalProperties">[docs]</a>
+<span class="k">class</span> <span class="nc">physicalProperties</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="physicalProperties.angular_velocities_MD_eig">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.physicalProperties.physicalProperties.angular_velocities_MD_eig">[docs]</a>
+    <span class="k">def</span> <span class="nf">angular_velocities_MD_eig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_vecs</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+        <span class="c1"># We need error handling in this function</span>
+        <span class="n">old_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="nb">all</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span>
+
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Processing angular velocities...&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="c1"># u, v = n_vecs[step, i], n_vecs[step+1,i]</span>
+                <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">n_vecs</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">n_vecs</span><span class="p">[</span><span class="n">step</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+
+                <span class="c1"># We consider here the usual derivative averaging</span>
+                <span class="c1"># in this new context</span>
+                <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+                <span class="c1"># It needs to be normalized</span>
+                <span class="c1"># But if it&#39;s zero, it&#39;s zero...</span>
+                <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">norm</span> <span class="o">&lt;</span> <span class="mf">1E-7</span><span class="p">:</span>
+                    <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]))</span>
+
+                <span class="c1"># Now we compute w. To do this, we compute the angle</span>
+                <span class="c1"># between the vectors and how it changes, as if</span>
+                <span class="c1"># we were sitting in a 2D plane.</span>
+
+                <span class="c1">#u, v = n_vecs[step-1, i], n_vecs[step+1,i]</span>
+
+                <span class="n">scalar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">u</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">scalar</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+                    <span class="n">theta</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="p">)</span><span class="c1">#/ (np.sqrt(np.dot(v, v))*np.sqrt(np.dot(u,u))) )</span>
+
+                <span class="c1"># We calculate the derivative of the angle to obtain the norm of the angular velocity</span>
+                <span class="c1"># and apply it to the w vector, taking into account we measure all by</span>
+                <span class="c1"># double timesteps. Note also that theta= delta theta.</span>
+                <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="n">theta</span><span class="o">/</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%3.2f</span><span class="s2">...</span><span class="se">\r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="mf">100.</span><span class="o">*</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">))))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="c1"># We finally treat the boundary cases</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">n_vecs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">n_vecs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+            <span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">norm</span> <span class="o">&lt;</span> <span class="mf">1E-7</span><span class="p">:</span>
+                <span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]))</span>
+
+            <span class="n">scalar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">scalar</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+                <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span> <span class="mf">1.0</span> <span class="p">)</span><span class="c1"># / (np.sqrt(np.dot(v, v))*np.sqrt(np.dot(u, u))) )</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="p">)</span>
+
+            <span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="n">theta</span><span class="o">/</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="o">**</span><span class="n">old_err</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">w</span></div>
+
+
+    <span class="c1"># A function that computes the derivative per step</span>
+    <span class="c1"># As is, it computes the rotation angle as the crossproduct</span>
+    <span class="c1"># of two consecutive velocity vectors.</span>
+<div class="viewcode-block" id="physicalProperties.angular_velocities_MD_test">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.physicalProperties.physicalProperties.angular_velocities_MD_test">[docs]</a>
+    <span class="k">def</span> <span class="nf">angular_velocities_MD_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_vecs</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+        <span class="c1"># We need error handling in this function</span>
+        <span class="n">old_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="nb">all</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span>
+
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Processing angular velocities...&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="c1"># u, v = n_vecs[step, i], n_vecs[step+1,i]</span>
+                <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">n_vecs</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">n_vecs</span><span class="p">[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">n_vecs</span><span class="p">[</span><span class="n">step</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">n_vecs</span><span class="p">[</span><span class="n">step</span><span class="p">,</span><span class="n">i</span><span class="p">]</span>
+
+                <span class="c1"># We consider here the usual derivative averaging</span>
+                <span class="c1"># in this new context</span>
+                <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+                <span class="c1"># It needs to be normalized</span>
+                <span class="c1"># But if it&#39;s zero, it&#39;s zero...</span>
+                <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">norm</span> <span class="o">&lt;</span> <span class="mf">1E-7</span><span class="p">:</span>
+                    <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]))</span>
+
+                <span class="c1"># Now we compute w. To do this, we compute the angle</span>
+                <span class="c1"># between the vectors and how it changes, as if</span>
+                <span class="c1"># we were sitting in a 2D plane.</span>
+                
+                <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">n_vecs</span><span class="p">[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">n_vecs</span><span class="p">[</span><span class="n">step</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">]</span>
+
+                <span class="n">scalar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">u</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">scalar</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+                    <span class="n">theta</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="p">)</span><span class="c1">#/ (np.sqrt(np.dot(v, v))*np.sqrt(np.dot(u,u))) )</span>
+
+                <span class="c1"># We calculate the derivative of the angle to obtain the norm of the angular velocity</span>
+                <span class="c1"># and apply it to the w vector, taking into account we measure all by</span>
+                <span class="c1"># double timesteps. Note also that theta= delta theta.</span>
+                <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="n">theta</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%3.2f</span><span class="s2">...</span><span class="se">\r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="mf">100.</span><span class="o">*</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">))))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # We finally treat the boundary cases</span>
+<span class="sd">        for i in range(len(n_vecs[0])):</span>
+<span class="sd">            u, v = n_vecs[-1, i], n_vecs[-2, i]</span>
+<span class="sd">            w[-1, i] = np.cross(u, v)</span>
+<span class="sd">            norm = np.sqrt(np.dot(w[-1, i], w[-1, i]))</span>
+<span class="sd">            if not norm &lt; 1E-7:</span>
+<span class="sd">                w[-1, i] /= np.sqrt(np.dot(w[-1, i], w[-1, i]))</span>
+
+<span class="sd">            scalar = np.dot(u,v)</span>
+<span class="sd">            if scalar &gt; 1.0:</span>
+<span class="sd">                theta = np.arccos( 1.0 )# / (np.sqrt(np.dot(v, v))*np.sqrt(np.dot(u, u))) )</span>
+<span class="sd">            else:</span>
+<span class="sd">                theta = np.arccos( np.dot(u,v) )</span>
+
+<span class="sd">            w[-1, i] *= -theta/(dt)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="o">**</span><span class="n">old_err</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">angular_velocities_MD_GPT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_vecs</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">n_vecs</span><span class="p">[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_vecs</span><span class="p">[</span><span class="n">step</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># we use the numpy cross function to compute cross product </span>
+            <span class="c1"># and divide by 2*dt to get the angular velocity</span>
+            <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">w</span>
+
+    <span class="c1"># Calculate angle velocities from the angle description of the system.</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">angular_velocities_MD</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_vecs</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+        <span class="c1"># We need error handling in this function</span>
+        <span class="n">old_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="nb">all</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span>
+
+        <span class="c1"># First we compute the vectorial character of the angular velocity</span>
+        <span class="c1"># That is, we need to find the vector describing the axis of the rotation.</span>
+        <span class="c1"># Problem is all this is going to be super slow so I&#39;m gonna try to add some</span>
+        <span class="c1"># descriptors for the time being.</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Processing angular velocities...&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">n_vecs</span><span class="p">[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">n_vecs</span><span class="p">[</span><span class="n">step</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">]</span>
+                <span class="c1"># We consider here the usual derivative averaging</span>
+                <span class="c1"># in this new context</span>
+                <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                
+                <span class="c1"># It needs to be normalized</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]))</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+                <span class="c1"># Now we compute w. To do this, we compute the angle</span>
+                <span class="c1"># between the vectors and how it changes, as if </span>
+                <span class="c1"># we were sitting in a 2D plane.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">u</span><span class="p">)))</span> <span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+
+                <span class="c1"># We calculate the derivative of the angle to obtain the norm of the angular velocity</span>
+                <span class="c1"># and apply it to the w vector, taking into account we measure all by</span>
+                <span class="c1"># double timesteps. Note also that theta= delta theta.</span>
+                <span class="n">w</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="n">theta</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%3.2f</span><span class="s2">...</span><span class="se">\r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="mf">100.</span><span class="o">*</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">))))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="c1"># We finally treat the boundary cases</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">n_vecs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">n_vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+            <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]))</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">u</span><span class="p">)))</span> <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="n">theta</span><span class="o">/</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">n_vecs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">n_vecs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+            <span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]))</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">u</span><span class="p">)))</span> <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="n">theta</span><span class="o">/</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="o">**</span><span class="n">old_err</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">w</span>
+
+
+<div class="viewcode-block" id="physicalProperties.angular_velocities_MD_deprecated">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.physicalProperties.physicalProperties.angular_velocities_MD_deprecated">[docs]</a>
+    <span class="k">def</span> <span class="nf">angular_velocities_MD_deprecated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+        <span class="n">angular_velocities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span>
+        <span class="n">angular_velocities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">angles</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">angles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">dt</span>
+        <span class="n">angular_velocities</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">angles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">angles</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span><span class="o">/</span><span class="n">dt</span>
+   
+        <span class="n">post</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">angles</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="n">pre</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">angles</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">angular_velocities</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">post</span><span class="o">-</span><span class="n">pre</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1">#for i in range(1,len(angles)-1):</span>
+        <span class="c1">#    angular_velocities[i] = (angles[i+1] - angles[i-1])/(2*dt)</span>
+
+        <span class="k">return</span> <span class="n">angular_velocities</span></div>
+
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">calculate_angle_full</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">e_crossproduct</span><span class="p">):</span>
+        <span class="n">cosphi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v1</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v2</span><span class="p">))</span>
+        <span class="n">sinphi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">e_crossproduct</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">))</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="mi">180</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">cosphi</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="k">if</span> <span class="n">sinphi</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">angle</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">360</span><span class="o">-</span><span class="n">angle</span>
+
+    <span class="c1"># e_crossproduct is the e vector normal to the plane v</span>
+    <span class="c1"># We could compute this internally but then we would need</span>
+    <span class="c1"># to know which vector projects into which vector, v1, into v2.</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">calculate_angle_full_original</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">e_crossproduct</span><span class="p">):</span>
+        <span class="n">cosphi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+        <span class="n">sinphi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">e_crossproduct</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">))</span>
+        <span class="n">acos</span> <span class="o">=</span> <span class="mi">180</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">cosphi</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="k">if</span> <span class="n">sinphi</span> <span class="o">&gt;=</span> <span class="mf">0.</span><span class="p">:</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">acos</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="c1">#sinphi &lt; 0.:</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="mi">180</span><span class="o">+</span><span class="p">(</span><span class="mi">180</span><span class="o">-</span><span class="n">acos</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">angle</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">calculate_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">):</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v1</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span> <span class="n">v2</span><span class="p">)))</span> 
+        <span class="k">return</span> <span class="n">angle</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">calculate_polarization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">born_charges</span><span class="p">,</span> <span class="n">ref_struct</span><span class="p">,</span> <span class="n">final_struct</span><span class="p">):</span>
+        <span class="n">displacements</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">final_struct</span><span class="o">.</span><span class="n">at_cart</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">frac_to_cart</span><span class="p">(</span><span class="n">final_struct</span><span class="o">.</span><span class="n">B</span><span class="p">,</span> <span class="n">ref_struct</span><span class="o">.</span><span class="n">at_frac</span><span class="p">))</span> <span class="c1"># Any cell basis! :)</span>
+
+        <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">3</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">born_charges</span><span class="p">)):</span> <span class="c1"># this could be also final_struct.at_frac</span>
+                <span class="k">for</span> <span class="n">beta</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                    <span class="n">P</span><span class="p">[</span><span class="n">alpha</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">born_charges</span><span class="p">[</span><span class="n">atom</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">alpha</span><span class="p">]</span><span class="o">*</span><span class="n">displacements</span><span class="p">[</span><span class="n">atom</span><span class="p">,</span> <span class="n">beta</span><span class="p">])</span> <span class="o">/</span> <span class="n">final_struct</span><span class="o">.</span><span class="n">volume</span>
+
+        <span class="c1"># Conversion factors</span>
+        <span class="n">EtoC</span> <span class="o">=</span> <span class="mf">1.6021766E-19</span>
+        <span class="n">AtoM</span> <span class="o">=</span> <span class="mf">1.0E-20</span>
+        
+        <span class="n">P</span> <span class="o">*=</span> <span class="n">EtoC</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0E6</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">AtoM</span><span class="o">*</span><span class="mf">10000.0</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Polarization (uC/cm^2): </span><span class="si">%.8f</span><span class="s2"> </span><span class="si">%.8f</span><span class="s2"> </span><span class="si">%.8f</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">P</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">P</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Modulus (uC/cm^2): </span><span class="si">%.8f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">P</span><span class="p">))))</span>
+
+        <span class="k">return</span> <span class="n">P</span>
+
+    <span class="c1"># ATTENTION: we assume SCALEUP formalism, in which cells *are* defined.</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">calculate_polarization_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">born_charges</span><span class="p">,</span> <span class="n">ref_struct</span><span class="p">,</span> <span class="n">final_struct</span><span class="p">):</span>
+        <span class="c1"># Conversion factors</span>
+        <span class="n">EtoC</span> <span class="o">=</span> <span class="mf">1.6021766E-19</span>
+        <span class="n">AtoM</span> <span class="o">=</span> <span class="mf">1.0E-20</span>
+
+        <span class="c1"># Get displacements from RS</span>
+        <span class="n">displacements</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">final_struct</span><span class="o">.</span><span class="n">at_cart</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">frac_to_cart</span><span class="p">(</span><span class="n">final_struct</span><span class="o">.</span><span class="n">B</span><span class="p">,</span> <span class="n">ref_struct</span><span class="o">.</span><span class="n">at_frac</span><span class="p">))</span> <span class="c1"># Any cell basis! :)</span>
+        
+        <span class="c1"># Get cell ordering</span>
+        <span class="c1">#C[i,j,k]-&gt;displacements[atom, beta] &lt;- ordering</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">ref_struct</span><span class="o">.</span><span class="n">cell_id</span><span class="p">)</span>
+
+        <span class="c1"># Get polarization of each cell</span>
+        <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">C</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># Not sure it works?</span>
+        <span class="n">Px</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nx</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">Py</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">ny</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">Pz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nz</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">C</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nz</span><span class="p">):</span>
+                    <span class="c1"># Redefine displacements into disp &lt;- according to C[i,j,k]</span>
+                    <span class="k">for</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">born_charges</span><span class="p">)):</span> <span class="c1"># here we have to go to 5 atoms cell?</span>
+                            <span class="k">for</span> <span class="n">beta</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                                <span class="n">P</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">alpha</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">born_charges</span><span class="p">[</span><span class="n">atom</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">alpha</span><span class="p">]</span><span class="o">*</span><span class="n">displacement</span><span class="p">[</span><span class="n">atom</span><span class="p">,</span> <span class="n">beta</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">final_struct</span><span class="o">.</span><span class="n">volume</span><span class="o">/</span><span class="p">(</span><span class="n">nx</span><span class="o">*</span><span class="n">ny</span><span class="o">*</span><span class="n">nz</span><span class="p">))</span>
+
+        <span class="c1"># Unit conversion</span>
+        <span class="n">P</span> <span class="o">*=</span> <span class="n">EtoC</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0E6</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">AtoM</span><span class="o">*</span><span class="mf">10000.0</span><span class="p">)</span>
+
+        <span class="c1"># Get polarization per direction</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span><span class="p">):</span>                       
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nz</span><span class="p">):</span>
+                    <span class="n">Px</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">P</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">]</span>
+                    <span class="n">Py</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">P</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">]</span>
+                    <span class="n">Pz</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="n">P</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_to_file</span><span class="p">(</span><span class="s1">&#39;P_along_x.dat&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">Px</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_to_file</span><span class="p">(</span><span class="s1">&#39;P_along_y.dat&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">Py</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_to_file</span><span class="p">(</span><span class="s1">&#39;P_along_z.dat&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">Pz</span><span class="p">])</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">BMprime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">e0</span><span class="p">,</span><span class="n">v0</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">ep</span><span class="p">):</span> 
+
+        <span class="k">return</span> <span class="p">(</span><span class="mf">160.217646</span><span class="p">)</span><span class="o">*</span> <span class="p">(</span><span class="mf">1.5</span><span class="o">*</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">k</span><span class="p">)</span><span class="o">*</span> <span class="p">(</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">+</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">ep</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">v0</span><span class="o">/</span><span class="n">V</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mf">4.0</span><span class="o">/</span><span class="mf">3.0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">V</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">ep</span><span class="o">*</span><span class="p">(</span><span class="n">v0</span><span class="o">/</span><span class="n">V</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">V</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">ep</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">v0</span><span class="o">/</span><span class="n">V</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">3.0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">V</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">BM</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">e0</span><span class="p">,</span><span class="n">v0</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">ep</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">e0</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.5</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span> <span class="mf">0.75</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">ep</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">v0</span><span class="o">/</span><span class="n">V</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mf">4.0</span><span class="o">/</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="n">ep</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">v0</span><span class="o">/</span><span class="n">V</span><span class="p">)</span><span class="o">**</span><span class="mf">2.0</span> <span class="o">-</span> <span class="mf">1.5</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">ep</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">v0</span><span class="o">/</span><span class="n">V</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">ep</span> <span class="o">+</span> <span class="mf">1.5</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">GF</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_params</span><span class="p">,</span> <span class="n">VE</span><span class="p">):</span>
+        <span class="n">GFvalue</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="p">[</span><span class="n">e0</span><span class="p">,</span><span class="n">v0</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">ep</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_params</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">VE</span><span class="p">)):</span>
+            <span class="n">GFvalue</span> <span class="o">+=</span> <span class="p">(</span><span class="n">VE</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">BM</span><span class="p">(</span><span class="n">VE</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">e0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">ep</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">VE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">GFvalue</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">fit_BM</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">optimize</span>
+        <span class="n">init_params</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">59</span><span class="p">,</span> <span class="mi">156</span><span class="p">,</span> <span class="mf">1.34</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">]</span>
+        <span class="n">VE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">V</span><span class="p">),</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">V</span><span class="p">)):</span>
+            <span class="n">VE</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mf">0.0</span>
+            <span class="n">VE</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">E</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mf">0.0</span>
+
+        <span class="n">result1</span> <span class="o">=</span>  <span class="n">optimize</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">GF</span><span class="p">,</span> <span class="n">init_params</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">VE</span><span class="p">))[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">optimize</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">GF</span><span class="p">,</span> <span class="n">result1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">VE</span><span class="p">))</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">PV_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">range_V</span><span class="p">,</span> <span class="n">BMparams</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;PV.dat&#39;</span>
+        <span class="n">fopen</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;#V(Angstrom**3)</span><span class="se">\t</span><span class="s1">P(GPa)</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">numpoints</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpoints</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">range_V</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">numpoints</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">range_V</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">range_V</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BMprime</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">BMparams</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">BMparams</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">BMparams</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">BMparams</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">%.8e</span><span class="se">\t</span><span class="si">%.8e</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+        <span class="n">fopen</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">fopen</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>    
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">EV_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">range_V</span><span class="p">,</span> <span class="n">BMparams</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;EV.dat&#39;</span>
+        <span class="n">fopen</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;#V(Angstrom**3)</span><span class="se">\t</span><span class="s1">E(eV)</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">numpoints</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpoints</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">range_V</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">numpoints</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">range_V</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">range_V</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">E</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BM</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">BMparams</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">BMparams</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">BMparams</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">BMparams</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">%.8e</span><span class="se">\t</span><span class="si">%.8e</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span>
+        <span class="n">fopen</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">fopen</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># It is prepared to call as process_EV([VASP1.outcar, VASP2.outcar, ...])</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">process_EV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+        <span class="n">E_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">V_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="n">fit_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_BM</span><span class="p">(</span><span class="n">V_array</span><span class="p">,</span> <span class="n">E_array</span><span class="p">)</span>
+        <span class="c1"># Process fit</span>
+        <span class="n">BMparams</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">fit_result</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>
+        <span class="n">testparams</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">59.6209</span><span class="p">,</span> <span class="mf">157.55</span><span class="p">,</span> <span class="mf">0.0829353</span><span class="p">,</span> <span class="mf">0.344118</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EV_range</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">V_array</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">V_array</span><span class="p">)],</span> <span class="n">BMparams</span><span class="p">,</span> <span class="s1">&#39;EV_fit.dat&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PV_range</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">V_array</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">V_array</span><span class="p">)],</span> <span class="n">BMparams</span><span class="p">,</span> <span class="s1">&#39;PV_fit.dat&#39;</span><span class="p">)</span>
+
+        <span class="n">fopen</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;EV_raw.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;#V (Angstrom**3)</span><span class="se">\t</span><span class="s1">E(eV)</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">V</span><span class="p">)):</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">%.8e</span><span class="se">\t</span><span class="si">%.8e</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">E</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">fopen</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">BMparams</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">solve_VP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">final_pressure</span><span class="p">,</span> <span class="n">BMparams</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">FP</span> <span class="o">=</span> <span class="n">final_pressure</span>
+        <span class="p">[</span><span class="n">e0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">ep</span><span class="p">]</span> <span class="o">=</span> <span class="n">BMparams</span>
+        <span class="n">tol</span> <span class="o">=</span> <span class="mf">1E-7</span>
+
+        <span class="c1"># First sample</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2000</span><span class="p">):</span>
+            <span class="n">last_step</span> <span class="o">=</span> <span class="n">FP</span><span class="o">-</span><span class="n">P</span>
+            <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BMprime</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">e0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">ep</span><span class="p">)</span><span class="o">+</span><span class="mf">0.0</span>
+            <span class="n">this_step</span> <span class="o">=</span> <span class="n">FP</span> <span class="o">-</span> <span class="n">P</span>
+        
+            <span class="k">if</span><span class="p">(</span><span class="n">last_step</span><span class="o">&lt;</span><span class="mf">0.0</span> <span class="ow">and</span> <span class="n">this_step</span><span class="o">&gt;</span><span class="mf">0.0</span><span class="p">):</span>
+                <span class="n">init_range</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
+
+        <span class="n">Pdiff</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="p">[</span><span class="n">V1</span><span class="p">,</span> <span class="n">V2</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_range</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span><span class="p">(</span><span class="n">Pdiff</span><span class="o">&gt;</span><span class="n">tol</span><span class="p">):</span>
+            <span class="n">new_volume</span> <span class="o">=</span> <span class="p">(</span><span class="n">V1</span><span class="o">+</span><span class="n">V2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+            <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BMprime</span><span class="p">(</span><span class="n">new_volume</span><span class="p">,</span> <span class="n">e0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">ep</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">P</span> <span class="o">&lt;</span> <span class="n">final_pressure</span><span class="p">:</span>
+                <span class="p">[</span><span class="n">V1</span><span class="p">,</span> <span class="n">V2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">V1</span><span class="p">,</span> <span class="n">new_volume</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">P</span> <span class="o">&gt;</span> <span class="n">final_pressure</span><span class="p">:</span>
+                <span class="p">[</span><span class="n">V1</span><span class="p">,</span> <span class="n">V2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_volume</span><span class="p">,</span> <span class="n">V2</span><span class="p">]</span>
+            <span class="n">steps</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">Pdiff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">-</span><span class="n">FP</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Volume(Angstrom**3) and pressure(GPa) (</span><span class="si">%d</span><span class="s2">steps):&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">steps</span><span class="p">),</span> <span class="n">new_volume</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_volume</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">Fvib_from_PDOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">omegaTHZ</span><span class="p">,</span> <span class="n">fft</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+        <span class="c1"># Frequency in omega is expected in THz</span>
+        <span class="n">kB</span> <span class="o">=</span> <span class="mf">8.617333262E-5</span> <span class="c1">#eV*K^-1</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="mf">4.135667696E-15</span> <span class="c1"># eV*s</span>
+        <span class="n">omega</span> <span class="o">=</span> <span class="mf">1E12</span><span class="o">*</span><span class="n">omegaTHZ</span>
+        <span class="n">integrand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">omega</span><span class="p">))])</span>
+        <span class="n">integrand_sinh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">omega</span><span class="p">))])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">omega</span><span class="p">))):</span>
+            <span class="n">integrand</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fft</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">kB</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">h</span><span class="o">*</span><span class="n">omega</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">kB</span><span class="o">*</span><span class="n">T</span><span class="p">)))</span><span class="o">+</span><span class="n">h</span><span class="o">*</span><span class="n">omega</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span> <span class="c1"># VERSION         1</span>
+            <span class="n">integrand_sinh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">kB</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">fft</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sinh</span><span class="p">(</span><span class="n">h</span><span class="o">*</span><span class="n">omega</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">kB</span><span class="o">*</span><span class="n">T</span><span class="p">))))</span>
+
+        <span class="c1">#print(omega,fft)</span>
+        <span class="n">F</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func_integral</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">integrand_sinh</span><span class="p">)</span>
+        <span class="c1">#print(F)</span>
+        <span class="k">return</span> <span class="n">F</span>
+
+    <span class="c1"># Direct extract of G from PDOS</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">S_from_PDOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">omegaTHZ</span><span class="p">,</span> <span class="n">fft</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+        <span class="c1"># Frequency in omega is expected in THz</span>
+        <span class="n">kB</span> <span class="o">=</span> <span class="mf">8.617333262E-5</span> <span class="c1">#eV*K^-1</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="mf">4.135667696E-15</span> <span class="c1"># eV*s</span>
+        <span class="n">omega</span> <span class="o">=</span> <span class="mf">1E12</span><span class="o">*</span><span class="n">omegaTHZ</span>
+        <span class="n">integrand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">omega</span><span class="p">))])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">omega</span><span class="p">))):</span>
+            <span class="n">argument</span> <span class="o">=</span> <span class="n">h</span><span class="o">*</span><span class="n">omega</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">kB</span><span class="o">*</span><span class="n">T</span><span class="p">)</span>
+            
+            <span class="n">integrand</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fft</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">kB</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sinh</span><span class="p">(</span><span class="n">argument</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="n">h</span><span class="o">*</span><span class="n">omega</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sinh</span><span class="p">(</span><span class="n">argument</span><span class="p">)))</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="p">))</span>
+
+        <span class="n">S</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func_integral</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">integrand</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">S</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">S_from_2Dhist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xedges</span><span class="p">,</span> <span class="n">yedges</span><span class="p">,</span> <span class="n">hist</span><span class="p">):</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="mf">.0</span>
+        <span class="c1"># There is no kbar...</span>
+        <span class="n">old_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="nb">all</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="nb">all</span> <span class="o">=</span> <span class="s1">&#39;raise&#39;</span><span class="p">)</span>
+        <span class="n">number_of_bins</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">norm_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span>
+        <span class="n">xlen</span> <span class="o">=</span> <span class="n">xedges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xedges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ylen</span> <span class="o">=</span> <span class="n">yedges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">yedges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">area_element</span> <span class="o">=</span> <span class="n">xlen</span><span class="o">*</span><span class="n">ylen</span><span class="o">/</span><span class="n">number_of_bins</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">norm_hist</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">norm_hist</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">S</span> <span class="o">+=</span> <span class="n">area_element</span><span class="o">*</span><span class="n">norm_hist</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">area_element</span><span class="o">*</span><span class="n">norm_hist</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="o">**</span><span class="n">old_err</span><span class="p">)</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">S</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">number_of_bins</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">S</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">C_from_PDOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">fft</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+        <span class="n">kB</span> <span class="o">=</span> <span class="mf">8.617333262E-5</span> <span class="c1">#eV*K^-1</span>
+        <span class="n">hbar</span> <span class="o">=</span> <span class="mf">6.582119569E-16</span> <span class="c1"># eV*s</span>
+        <span class="n">integrand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">omega</span><span class="p">))])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">omega</span><span class="p">))):</span>
+            <span class="n">argument</span> <span class="o">=</span> <span class="n">hbar</span><span class="o">*</span><span class="mf">1.0E12</span><span class="o">*</span><span class="n">omega</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">kB</span><span class="o">*</span><span class="n">T</span><span class="p">)</span>
+
+            <span class="n">integrand</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fft</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">kB</span><span class="o">*</span><span class="p">(</span><span class="n">argument</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func_integral</span><span class="p">(</span><span class="mf">1E12</span><span class="o">*</span><span class="n">omega</span><span class="p">,</span> <span class="n">integrand</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">C</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">G_from_Fvib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Fvib</span><span class="p">,</span> <span class="n">EP</span><span class="p">,</span> <span class="n">press</span><span class="p">,</span> <span class="n">vol</span><span class="p">):</span>
+        <span class="c1"># Assumes the input units are coherent... :)</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">EP</span> <span class="o">+</span> <span class="n">Fvib</span> <span class="o">+</span> <span class="p">(</span><span class="n">press</span><span class="o">*</span><span class="n">vol</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">G</span>
+
+    <span class="c1"># Just a wrapper for np.fit</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">fit_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">):</span>
+        <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">curve_fit</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">popt</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">func_integral</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">func_interpol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c1"># We multiply by N the number of points</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">new_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">n</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="n">new_x</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="n">n</span><span class="o">*</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">new_x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">new_x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">func_spline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
+        <span class="c1"># We multiply by 3 the number of points, for example</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">5</span> 
+        <span class="n">new_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">5</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+                <span class="n">new_x</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">5</span><span class="o">*</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+        <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="n">y_spline</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">new_x</span><span class="p">,</span> <span class="n">tck</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_x</span><span class="p">,</span> <span class="n">y_spline</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">func_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
+        <span class="c1"># We multiply by 3 the number of points, for example</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="n">new_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">new_x</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+        <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="n">y_der</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">new_x</span><span class="p">,</span> <span class="n">tck</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_x</span><span class="p">,</span> <span class="n">y_der</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">func_derivative_direct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="mi">1</span><span class="o">/</span><span class="mf">2.</span>
+
+        <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dx</span>
+
+    <span class="c1"># ACFunc is the autocorrelation function</span>
+    <span class="c1"># dt is the spacing at which &lt;v(0)*v(dt)&gt; is computed, in seconds</span>
+    <span class="c1"># Result omega is in THz, and vacf is unbiased.</span>
+    <span class="c1"># Returns omega, fft</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">PDOS_from_ACF</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ACF</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">numatoms</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">ACF</span><span class="p">)</span>
+        <span class="n">omegalong</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span><span class="o">*</span><span class="mf">1E-12</span>
+        <span class="n">PDOSlong</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">ACF</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">ACF</span><span class="p">),</span> <span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># Only return the non-negative-omega spectrum</span>
+        <span class="n">omega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">omegalong</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">omegalong</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
+        <span class="n">PDOS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">PDOSlong</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">omegalong</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
+
+        <span class="k">if</span> <span class="n">normalize</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+            <span class="n">norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func_integral</span><span class="p">(</span><span class="mf">1.0E12</span><span class="o">*</span><span class="n">omega</span><span class="p">,</span> <span class="n">PDOS</span><span class="p">)</span>
+            <span class="n">normalized_PDOS</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">numatoms</span><span class="o">*</span><span class="n">PDOS</span><span class="o">/</span><span class="n">norm</span>
+            <span class="n">result_PDOS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">normalized_PDOS</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result_PDOS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">PDOS</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">omega</span><span class="p">,</span> <span class="n">result_PDOS</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">autocorrelate_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">signal</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">correlate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;fft&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">size</span><span class="o">/</span><span class="mi">2</span><span class="p">):]</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">autocorrelate_peratom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">shVacf</span><span class="p">):</span>
+        <span class="n">shVacf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_vector</span><span class="p">(</span><span class="n">window</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">shVacf</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_vector</span><span class="p">(</span><span class="n">window</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">shVacf</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_vector</span><span class="p">(</span><span class="n">window</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">autocorrelate_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">shVacf</span><span class="p">):</span>
+        <span class="n">num_atoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">window</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_atoms</span><span class="p">):</span>
+            <span class="n">shVacf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_vector</span><span class="p">(</span><span class="n">window</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">shVacf</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_vector</span><span class="p">(</span><span class="n">window</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">shVacf</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_vector</span><span class="p">(</span><span class="n">window</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">compute_VACF_parallel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span> <span class="n">num_windows</span><span class="p">):</span>
+        <span class="n">num_steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_array</span><span class="p">)</span>
+        <span class="n">num_atoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_array</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># Parallel routine initialization</span>
+        <span class="n">manager</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Manager</span><span class="p">()</span>
+        <span class="n">shVacf</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">list</span><span class="p">([</span><span class="n">manager</span><span class="o">.</span><span class="n">list</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]</span><span class="o">*</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">))]</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="n">nprocs</span> <span class="o">=</span> <span class="mi">16</span>
+        <span class="n">parsteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_windows</span><span class="o">/</span><span class="n">nprocs</span><span class="p">)</span>
+        <span class="n">parsteps_left</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_windows</span><span class="o">%</span><span class="n">nprocs</span><span class="p">)</span>
+
+        <span class="n">vacf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">vacfx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">vacfy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">vacfz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">parsteps</span><span class="p">):</span>
+            <span class="n">runners</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nprocs</span><span class="p">):</span>
+                <span class="n">i_window</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">par</span><span class="o">*</span><span class="n">nprocs</span> <span class="o">+</span> <span class="n">proc</span><span class="p">)</span>
+                <span class="n">window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">v_array</span><span class="p">[</span><span class="n">i_window</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">i_window</span><span class="o">+</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
+                <span class="n">Args</span> <span class="o">=</span> <span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">shVacf</span><span class="p">)</span>
+                <span class="n">runners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
+                        <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_window</span><span class="p">,</span>
+                                                  <span class="n">args</span><span class="o">=</span><span class="n">Args</span><span class="p">))</span>
+
+            <span class="c1">#Launch processes</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">runners</span><span class="p">:</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">runners</span><span class="p">:</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            
+        <span class="n">runners</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">parsteps_left</span><span class="p">):</span>
+            <span class="n">i_window</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">par</span> <span class="o">+</span> <span class="n">parsteps</span><span class="o">*</span><span class="n">nprocs</span><span class="p">)</span>
+            <span class="n">window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">v_array</span><span class="p">[</span><span class="n">i_window</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">i_window</span><span class="o">+</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
+            <span class="n">Args</span> <span class="o">=</span> <span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">shVacf</span><span class="p">,</span> <span class="p">)</span>
+            <span class="n">runners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
+                    <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_window</span><span class="p">,</span>
+                                                <span class="n">args</span><span class="o">=</span><span class="n">Args</span><span class="p">))</span>
+        <span class="c1">#Launch processes</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">runners</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">runners</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+        <span class="n">vacf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shVacf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">vacf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">((</span><span class="n">vacf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">vacf</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">vacf</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="mf">3.0</span><span class="o">*</span><span class="n">num_windows</span><span class="o">*</span><span class="n">num_atoms</span><span class="p">))</span>
+
+        <span class="k">del</span> <span class="n">shVacf</span>
+        <span class="n">manager</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">vacf</span><span class="p">)</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">compute_VACF_serial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span> <span class="n">num_windows</span><span class="p">):</span>
+        <span class="n">num_steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_array</span><span class="p">)</span>
+        <span class="n">num_atoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_array</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">vacf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">vacfx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">vacfy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">vacfz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_windows</span><span class="p">):</span>
+            <span class="n">sp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">num_windows</span><span class="p">)</span>
+            <span class="n">ep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sp</span> <span class="o">+</span> <span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">v_array</span><span class="p">[</span><span class="n">sp</span><span class="p">:</span><span class="n">ep</span><span class="p">])</span>
+
+            <span class="c1"># Arizona contribution:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_atoms</span><span class="p">):</span>
+                <span class="n">vacfx</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_vector</span><span class="p">(</span><span class="n">window</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+                <span class="n">vacfy</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_vector</span><span class="p">(</span><span class="n">window</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="n">vacfz</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_vector</span><span class="p">(</span><span class="n">window</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+
+        <span class="n">vacf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">((</span><span class="n">vacfx</span> <span class="o">+</span> <span class="n">vacfy</span> <span class="o">+</span> <span class="n">vacfz</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">3.0</span><span class="o">*</span><span class="n">num_windows</span><span class="o">*</span><span class="n">num_atoms</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">vacf</span><span class="p">)</span>
+    
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">compute_VACF_direct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span> <span class="n">num_windows</span><span class="p">):</span>
+        <span class="n">num_steps</span><span class="p">,</span> <span class="n">num_atoms</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">v_array</span><span class="o">.</span><span class="n">shape</span>
+        <span class="c1"># compute the VACF for each window</span>
+        <span class="n">windows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">v_array</span><span class="p">[:</span><span class="n">num_steps</span><span class="o">//</span><span class="mi">2</span><span class="p">],</span> <span class="n">num_windows</span><span class="p">)</span>
+        <span class="n">vacf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">w</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">w</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">windows</span><span class="p">)</span>
+        <span class="c1"># normalize the result</span>
+        <span class="n">vacf</span> <span class="o">/=</span> <span class="p">(</span><span class="mf">3.0</span><span class="o">*</span><span class="n">num_windows</span><span class="o">*</span><span class="n">num_atoms</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vacf</span>
+
+    <span class="c1"># Wrapper for parallelization</span>
+    <span class="c1"># Inner parallelization: parallellization of the v(0)v(t) product, for several t simultaneously. This is the most efficient.</span>
+    <span class="c1"># Outer parallelization: parallelize the windows.</span>
+    <span class="c1"># Serial: no parallellization</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">compute_VACF</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">v_array</span><span class="p">,</span> <span class="n">num_windows</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;direct&#39;</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_array</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="n">num_windows</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The windowing mode requires that you &quot;</span><span class="o">+</span> 
+                    <span class="s2">&quot;have less windows than half the number steps! Aborting.&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;direct&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;serial&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;parallel&#39;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Default VACF calculation mode: serial&quot;</span><span class="p">)</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;direct&#39;</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;parallel&#39;</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_VACF_parallel</span><span class="p">(</span><span class="n">v_array</span><span class="p">,</span> <span class="n">num_windows</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;serial&#39;</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_VACF_serial</span><span class="p">(</span><span class="n">v_array</span><span class="p">,</span> <span class="n">num_windows</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;direct&#39;</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_VACF_direct</span><span class="p">(</span><span class="n">v_array</span><span class="p">,</span> <span class="n">num_windows</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="c1"># We have to see if np.dot(vec of vecs) is what we want...</span>
+    <span class="c1"># ... no, it doesn&#39;t. Hello.</span>
+    <span class="c1"># So what we have now is a self-made RACF calculation that should give the right</span>
+    <span class="c1"># result whatsoever...</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">compute_RACF</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span> <span class="n">num_windows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">num_steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_array</span><span class="p">)</span>
+        <span class="n">num_vectors</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_array</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">normalize</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">n_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_vectors_MD</span><span class="p">(</span><span class="n">v_array</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">v_array</span><span class="p">)</span>
+
+        <span class="n">racf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_windows</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">num_windows</span><span class="p">)</span>
+            <span class="n">window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">n_array</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="o">+</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">window</span><span class="p">)):</span>
+                <span class="n">racf</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;...j,...j&#39;</span><span class="p">,</span> <span class="n">window</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">window</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">racf</span> <span class="o">/</span> <span class="p">(</span><span class="n">num_windows</span><span class="o">*</span><span class="n">num_vectors</span><span class="p">))</span> 
+
+<div class="viewcode-block" id="physicalProperties.ACF_2D">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.physicalProperties.physicalProperties.ACF_2D">[docs]</a>
+    <span class="k">def</span> <span class="nf">ACF_2D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span> <span class="n">num_windows</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">num_steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_array</span><span class="p">)</span>
+        <span class="n">num_vectors</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_array</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">acf2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">acf</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_windows</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">num_windows</span><span class="p">)</span>
+            <span class="n">window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">v_array</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="o">+</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">window</span><span class="p">)):</span>
+                <span class="n">acf</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;...j,...j&#39;</span><span class="p">,</span> <span class="n">window</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">window</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">window</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                    <span class="n">acf2</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">window</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">k</span><span class="p">],</span> <span class="n">window</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_to_file</span><span class="p">(</span><span class="s1">&#39;test_ACF.dat&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">acf</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_to_file</span><span class="p">(</span><span class="s1">&#39;test_ACF.dat&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">acf2</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">acf</span> <span class="o">/</span> <span class="p">(</span><span class="n">num_windows</span><span class="o">*</span><span class="n">num_vectors</span><span class="p">))</span></div>
+
+
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">compute_RACF_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">num_steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_array</span><span class="p">)</span>
+        <span class="n">num_vectors</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_array</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">normalize</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">n_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_vectors_MD</span><span class="p">(</span><span class="n">v_array</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">v_array</span><span class="p">)</span>
+
+        <span class="n">racf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">norm_ct</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_steps</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">t2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_array</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                    <span class="n">racf</span><span class="p">[</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">n_array</span><span class="p">[</span><span class="n">t1</span><span class="p">,</span> <span class="n">k</span><span class="p">],</span> <span class="n">n_array</span><span class="p">[</span><span class="n">t2</span><span class="p">,</span> <span class="n">k</span><span class="p">])</span>
+                    <span class="n">norm_ct</span><span class="p">[</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_steps</span><span class="p">):</span>
+            <span class="n">racf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">1.</span><span class="o">/</span><span class="n">norm_ct</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">racf</span><span class="p">)</span>
+
+    <span class="c1"># ... and on the other hand, an Arizona-like function</span>
+    <span class="c1"># that should also provide a result. To be compared really.</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">compute_RACF_serial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span> <span class="n">num_windows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">num_steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_array</span><span class="p">)</span>
+        <span class="n">num_vecs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_array</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">normalize</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">n_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_vectors_MD</span><span class="p">(</span><span class="n">v_array</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">v_array</span><span class="p">)</span>
+
+        <span class="n">racf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">racfx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">racfy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">racfz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_windows</span><span class="p">):</span>
+            <span class="n">sp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="p">(</span><span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">num_windows</span><span class="p">)</span>
+            <span class="n">ep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sp</span> <span class="o">+</span> <span class="n">num_steps</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">n_array</span><span class="p">[</span><span class="n">sp</span><span class="p">:</span><span class="n">ep</span><span class="p">])</span>
+
+            <span class="c1"># Arizona contribution:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_vecs</span><span class="p">):</span>
+                <span class="n">racfx</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_vector</span><span class="p">(</span><span class="n">window</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+                <span class="n">racfy</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_vector</span><span class="p">(</span><span class="n">window</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="n">racfz</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelate_vector</span><span class="p">(</span><span class="n">window</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+
+        <span class="n">racf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">((</span><span class="n">racfx</span> <span class="o">+</span> <span class="n">racfy</span> <span class="o">+</span> <span class="n">racfz</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">num_windows</span><span class="o">*</span><span class="n">num_vecs</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">racf</span><span class="p">)</span></div>
+
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Crystal Toolkit</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2024, C. Escorihuela-Sayalero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

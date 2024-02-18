@@ -1,5 +1,29 @@
 [build-system]
-requires = ["numpy", "scipy", "matplotlib", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "ctoolkit"
+authors = [
+    {name = "C. Escorihuela-Sayalero"},
+]
+description = "The Crystal Toolkit"
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "numpy", "scipy", "matplotlib"
+]
+dynamic = ["version"]
+
+classifiers =[
+    "Programming Language :: Python :: 3",
+    "License :: BSD License"]
+
 [tool.setuptools_scm]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ctoolkit"]
+
+#[tool.setuptools.packages]
+#find = {}  # Scan the project directory with the default parameters
