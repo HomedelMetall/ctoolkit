@@ -1,5 +1,5 @@
-from toolkit.global_vars.ext_libs import *
-from toolkit.tools import tools
+from ctoolkit.global_vars.ext_libs import *
+from ctoolkit.tools import tools
 class SCALEUP():
     def __init__(self):
         #self.read_poscar()

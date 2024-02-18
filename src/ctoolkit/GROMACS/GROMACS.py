@@ -1,6 +1,6 @@
-from toolkit.global_vars.ext_libs import *
-from toolkit.global_vars.decorators import *
-from toolkit.tools import tools
+from ctoolkit.global_vars.ext_libs import *
+from ctoolkit.global_vars.decorators import *
+from ctoolkit.tools import tools
 class GROMACS():
     def __init__(self):
         pass

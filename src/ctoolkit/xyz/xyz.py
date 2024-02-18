@@ -1,5 +1,5 @@
-from toolkit.tools import tools
-from toolkit.global_vars.ext_libs import *
+from ctoolkit.tools import tools
+from ctoolkit.global_vars.ext_libs import *
 
 # Class to manage xyz formats.
 class xyz():

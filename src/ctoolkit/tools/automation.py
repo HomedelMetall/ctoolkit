@@ -1,5 +1,5 @@
-from toolkit.global_vars.ext_libs import *
-from toolkit.global_vars.tk_lib_VASP import *
+from ctoolkit.global_vars.ext_libs import *
+from ctoolkit.global_vars.tk_lib_VASP import *
 import shutil
 
 # Automated utilities

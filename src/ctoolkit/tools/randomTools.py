@@ -1,6 +1,6 @@
-from toolkit.global_vars.ext_libs import *
-from toolkit.global_vars.tk_lib_LAMMPS import *
-from toolkit.global_vars.tk_lib_VASP import *
+from ctoolkit.global_vars.ext_libs import *
+from ctoolkit.global_vars.tk_lib_LAMMPS import *
+from ctoolkit.global_vars.tk_lib_VASP import *
 class randomTools():
     def __init__(self):
         pass

@@ -1,12 +1,12 @@
 # Import local libraries
-from toolkit.global_vars.ext_libs import *
-from toolkit.tools.constants import *
-from toolkit.tools.cellOperations import *
-from toolkit.tools.structOperations import *
-from toolkit.tools.physicalProperties import *
-from toolkit.tools.manageDirs import *
-from toolkit.tools.automation import *
-from toolkit.tools.randomTools import *
+from ctoolkit.global_vars.ext_libs import *
+from ctoolkit.tools.constants import *
+from ctoolkit.tools.cellOperations import *
+from ctoolkit.tools.structOperations import *
+from ctoolkit.tools.physicalProperties import *
+from ctoolkit.tools.manageDirs import *
+from ctoolkit.tools.automation import *
+from ctoolkit.tools.randomTools import *
 
 # Superclass tools
 class tools(constants, cellOperations, structOperations, physicalProperties, manageDirs, automation, randomTools):

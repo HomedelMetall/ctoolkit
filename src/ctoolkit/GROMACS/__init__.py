@@ -1,1 +1,1 @@
-from toolkit.GROMACS.GROMACS import GROMACS
+from ctoolkit.GROMACS.GROMACS import GROMACS

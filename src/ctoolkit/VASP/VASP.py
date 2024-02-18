@@ -1,6 +1,6 @@
-from toolkit.global_vars.ext_libs import *
-from toolkit.VASP.POSCAR import *
-from toolkit.VASP.outcar import *
+from ctoolkit.global_vars.ext_libs import *
+from ctoolkit.VASP.POSCAR import *
+from ctoolkit.VASP.outcar import *
 
 # Main structure class VASP
 # Subclasses POSCAAR and outcar

@@ -1,4 +1,4 @@
-from toolkit.global_vars.version import *
+from ctoolkit.global_vars.version import *
 
 class info:
     def __init__(self):

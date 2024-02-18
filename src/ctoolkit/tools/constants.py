@@ -1,4 +1,4 @@
-from toolkit.global_vars.ext_libs import *
+from ctoolkit.global_vars.ext_libs import *
 
 # Some constants
 class constants:

@@ -1,19 +1,19 @@
-__all__ = ["tools", "decorators"]
+#__all__ = ["tools", "decorators"]
 
 import time
-from toolkit.global_vars.timers_dict import *
-from toolkit.global_vars.version import *
-from toolkit.tools import * 
-from toolkit.VASP import *
-from toolkit.LAMMPS import *
-from toolkit.GROMACS import *
-from toolkit.xyz import *
-from toolkit.SCALEUP import *
-from toolkit.decorators import *
+from ctoolkit.global_vars.timers_dict import *
+from ctoolkit.global_vars.version import *
+from ctoolkit.tools import * 
+from ctoolkit.VASP import *
+from ctoolkit.LAMMPS import *
+from ctoolkit.GROMACS import *
+from ctoolkit.xyz import *
+from ctoolkit.SCALEUP import *
+from ctoolkit.decorators import *
 
 timers_dict['Total run'] = time.time()
 
-from toolkit.info import *
+from ctoolkit.info import *
 
 #info()
 if __name__=='__main__':

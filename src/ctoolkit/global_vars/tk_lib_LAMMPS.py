@@ -1,1 +1,1 @@
-from toolkit.LAMMPS.LAMMPS import LAMMPS
+from ctoolkit.LAMMPS.LAMMPS import LAMMPS

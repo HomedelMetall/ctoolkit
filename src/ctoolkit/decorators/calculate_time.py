@@ -1,5 +1,5 @@
 import time
-from toolkit.global_vars.timers_dict import *
+from ctoolkit.global_vars.timers_dict import *
 
 def calculate_time(func):
 
