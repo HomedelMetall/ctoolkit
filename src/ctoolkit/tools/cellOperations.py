@@ -243,9 +243,10 @@ class cellOperations:
         return structures
 
     @calculate_time
-    def find_firstneighbors(self, atom, satellites, basis):
+    # Tolerance is given in percentage
+    def find_firstneighbors(self, atom, satellites, basis, tol=20):
         d = np.zeros([len(satellites)], dtype=float)
-        tol = 20 # in percentage
+        #tol = 20 # in percentage
         for i in range(len(satellites)):
             best_transform, transform_key = self.findBestPairPeriodic(atom, satellites[i], basis)
             dist = np.sqrt(np.dot(atom-best_transform, atom-best_transform))
@@ -254,14 +255,14 @@ class cellOperations:
                 d[i] = dist
             else:
                 d[i] = 1E5
-        #print(np.sort(d)) 
         min_dist = np.min(d)
         list_neighbors = []
         for i in range(len(satellites)):
-            if d[i] < min_dist*(1+tol/100):
+            if d[i] <= min_dist*(1+tol/100):
                 #print(i, d[i], min_dist*(1+tol/100))
                 list_neighbors.append(i)
 
+        #print(list_neighbors, min_dist, np.sort(d))
         return list_neighbors
 
     def find_full_molecules(self, struct, center, satellite, num_neighbors=0):
@@ -322,7 +323,7 @@ class cellOperations:
     # of the interaction and the SATELLITE possible
     # atoms belonging to a particular species
     @calculate_time
-    def find_groups(self, struct, center, satellite, excludeSatList=[]):
+    def find_groups(self, struct, center, satellite, excludeSatList=[], tol=20):
         center_atoms = struct.filter_atoms(center)
         sat_atoms = struct.filter_atoms(satellite, excludeSatList=excludeSatList)
         center_atoms_list = struct.filter_atoms_list(center)
@@ -331,7 +332,7 @@ class cellOperations:
         groups = []
         for i in range(len(center_atoms)):
             sat_atom_neighbors = []
-            list_neighbors = self.find_firstneighbors(center_atoms[i], sat_atoms, struct.B)
+            list_neighbors = self.find_firstneighbors(center_atoms[i], sat_atoms, struct.B, tol=tol)
             for j in list_neighbors:
                 sat_atom_neighbors.append(sat_atoms_list[j])
             groups.append([center_atoms_list[i], sat_atom_neighbors])

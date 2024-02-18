@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ctoolkit.tools.randomTools &#8212; Crystal Toolkit 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ctoolkit.tools.randomTools</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">toolkit.global_vars.ext_libs</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">toolkit.global_vars.tk_lib_LAMMPS</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">toolkit.global_vars.tk_lib_VASP</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="viewcode-block" id="randomTools">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.randomTools.randomTools">[docs]</a>
+<span class="k">class</span> <span class="nc">randomTools</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="randomTools.cat_lammps_trajectories">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.randomTools.randomTools.cat_lammps_trajectories">[docs]</a>
+    <span class="k">def</span> <span class="nf">cat_lammps_trajectories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filenames</span><span class="p">):</span>
+        <span class="n">output_xdat</span> <span class="o">=</span> <span class="s1">&#39;XDATCAR&#39;</span>
+        <span class="n">LAMMPS_structs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">total_nat</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+            <span class="n">Lstruct</span> <span class="o">=</span> <span class="n">LAMMPS</span><span class="p">()</span>
+            <span class="n">Lstruct</span><span class="o">.</span><span class="n">read_snapshots</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;typepos&#39;</span><span class="p">)</span>
+            <span class="n">total_nat</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Lstruct</span><span class="o">.</span><span class="n">id_lammps</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">LAMMPS_structs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Lstruct</span><span class="p">)</span>
+
+        <span class="n">LAMMPS_struct_cat</span> <span class="o">=</span> <span class="n">LAMMPS</span><span class="p">()</span>
+        <span class="n">LAMMPS_struct_cat</span><span class="o">.</span><span class="n">id_lammps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">LAMMPS_structs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id_lammps</span><span class="p">),</span>
+                                                    <span class="n">total_nat</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">LAMMPS_struct_cat</span><span class="o">.</span><span class="n">boxes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">LAMMPS_structs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">boxes</span><span class="p">)</span>
+        <span class="n">LAMMPS_struct_cat</span><span class="o">.</span><span class="n">atoms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">LAMMPS_structs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">),</span>
+                                                    <span class="n">total_nat</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="n">init</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">struct</span> <span class="ow">in</span> <span class="n">LAMMPS_structs</span><span class="p">:</span>
+            <span class="n">LAMMPS_struct_cat</span><span class="o">.</span><span class="n">id_lammps</span><span class="p">[:,</span> <span class="n">init</span><span class="p">:</span><span class="n">init</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">id_lammps</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">id_lammps</span><span class="p">)</span>
+            <span class="n">LAMMPS_struct_cat</span><span class="o">.</span><span class="n">atoms</span><span class="p">[:,</span> <span class="n">init</span><span class="p">:</span><span class="n">init</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+            <span class="n">init</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">id_lammps</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lammps_to_xdatcar</span><span class="p">(</span><span class="n">LAMMPS_struct_cat</span><span class="p">,</span> <span class="n">output_xdat</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="randomTools.group_coherence_test">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.randomTools.randomTools.group_coherence_test">[docs]</a>
+    <span class="k">def</span> <span class="nf">group_coherence_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
+        <span class="n">chk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">group</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="n">chk</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not all centers have the same number of group satellites! Check tolerances...&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="randomTools.molecule_finder">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.randomTools.randomTools.molecule_finder">[docs]</a>
+    <span class="k">def</span> <span class="nf">molecule_finder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">species</span><span class="p">):</span>
+        <span class="n">VASPstruct</span> <span class="o">=</span> <span class="n">VASP</span><span class="p">()</span>
+        <span class="n">VASPstruct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">read_poscar</span><span class="p">(</span><span class="s1">&#39;POSCAR&#39;</span><span class="p">)</span>
+        <span class="n">VASP_atoms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">VASPstruct</span><span class="o">.</span><span class="n">POSCAR</span><span class="o">.</span><span class="n">at_cart</span><span class="p">)</span>
+        <span class="c1">#MD_structures = tools.loadVASPMD(&#39;.&#39;, &#39;XDATCAR&#39;)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Looking for groups...&#39;</span><span class="p">)</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ids</span><span class="p">,</span> <span class="n">specie1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">species</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">specie2</span> <span class="ow">in</span> <span class="n">species</span><span class="p">[</span><span class="n">ids</span><span class="p">:]:</span> 
+                <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_groups</span><span class="p">(</span><span class="n">VASPstruct</span><span class="o">.</span><span class="n">POSCAR</span><span class="p">,</span> <span class="n">specie1</span><span class="p">,</span> <span class="n">specie2</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">: </span><span class="si">%d</span><span class="s1"> groups of </span><span class="si">%d</span><span class="s1"> atoms&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">specie1</span><span class="p">,</span> <span class="n">specie2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">),</span> <span class="mi">1</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])))</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">group_coherence_test</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+
+                <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">)</span></div>
+
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">readXDATCAR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">header_lines</span> <span class="o">=</span> <span class="mi">7</span>
+            <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">step_header_lines</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+              <span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">2</span><span class="o">+</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[:],</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">numatoms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">))</span>
+            <span class="n">numsnapshots</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">-</span><span class="n">header_lines</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">step_header_lines</span> <span class="o">+</span> <span class="n">numatoms</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">numsnapshots</span><span class="p">)</span> 
+            <span class="n">at_frac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">numsnapshots</span><span class="p">,</span> <span class="n">numatoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numsnapshots</span><span class="p">):</span>
+                <span class="n">pos_file</span> <span class="o">=</span> <span class="n">header_lines</span> <span class="o">+</span> <span class="n">step_header_lines</span> <span class="o">+</span> <span class="p">(</span><span class="n">step_header_lines</span><span class="o">+</span><span class="n">numatoms</span><span class="p">)</span><span class="o">*</span><span class="n">i</span>
+                <span class="n">at_frac</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">pos_file</span><span class="p">:</span><span class="n">pos_file</span><span class="o">+</span><span class="n">numatoms</span><span class="p">]])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">at_frac</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">B</span><span class="p">,</span> <span class="n">at_frac</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">linearfit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c1"># Solving for y = mx + c</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))])</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">m</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">m</span><span class="p">,</span> <span class="n">c</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">sorting_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1E-8</span><span class="p">):</span>
+        <span class="n">sorted_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+        <span class="n">s_order</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sorted_list</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="n">sorted_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">)</span> <span class="p">:</span>
+                    <span class="n">s_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">s_order</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">resort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">sorting_order</span><span class="p">):</span>
+        <span class="n">new_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sord</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sorting_order</span><span class="p">):</span>
+            <span class="n">new_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">sord</span><span class="p">]</span>
+    
+        <span class="k">return</span> <span class="n">new_array</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">sortMatrixbyCols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1E-8</span><span class="p">):</span>
+        <span class="n">Anew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+        <span class="n">sorted_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">Anew</span><span class="p">[:,</span> <span class="n">axis</span><span class="p">]))</span>
+        <span class="n">Asorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">Anew</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">Anew</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sorted_axis</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Anew</span><span class="p">[:,</span> <span class="n">axis</span><span class="p">])):</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sorted_axis</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">Anew</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">axis</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Anew</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="p">:])):</span>
+                        <span class="n">Asorted</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">Anew</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">l</span><span class="p">]</span> <span class="o">+</span> <span class="mf">.0</span>
+
+        <span class="k">return</span> <span class="n">Asorted</span>
+
+    <span class="c1"># Num_info = # atoms, for example</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">read_sequential_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">num_info</span><span class="p">,</span> <span class="n">hdr_lines</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># Basically: a sequential file has N header lines + M atom lines for S snapshots, for example.</span>
+        <span class="c1"># Hence, the number of lines L has to be</span>
+        <span class="c1">#           L = (N+M)*S</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">num_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">-</span><span class="n">offset</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">hdr_lines</span> <span class="o">+</span> <span class="n">num_info</span><span class="p">))</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">-</span><span class="n">offset</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="n">hdr_lines</span> <span class="o">+</span> <span class="n">num_info</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">res</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hey! Check num_info, hdr_lines. The data you provide seems non commensurate!</span><span class="se">\n</span><span class="s2"> Residual (L-offset)</span><span class="si">%%</span><span class="s2">(N+M) = </span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">res</span><span class="p">))</span>
+            <span class="n">dim_data</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">offset</span><span class="o">+</span><span class="n">hdr_lines</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">num_steps</span><span class="p">,</span> <span class="n">num_info</span><span class="p">,</span> <span class="n">dim_data</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">hdr</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_steps</span><span class="p">):</span>
+                <span class="n">sp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="p">(</span><span class="n">hdr_lines</span><span class="o">+</span><span class="n">num_info</span><span class="p">))</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">sp</span><span class="o">+</span><span class="n">hdr_lines</span><span class="p">:</span><span class="n">sp</span><span class="o">+</span><span class="n">hdr_lines</span><span class="o">+</span><span class="n">num_info</span><span class="p">]])</span>
+                <span class="c1">#for j in range(hdr_lines):</span>
+                <span class="c1">#    hdr.append(lines[sp+j].split())</span>
+                <span class="c1">#for j in range(num_info):</span>
+                <span class="c1">#    data[i,j] = np.array(lines[sp+hdr_lines+j].split(), dtype=float)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%3.2f</span><span class="s2">...</span><span class="se">\r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">num_steps</span><span class="p">))</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="c1"># Handle hdr with care. It&#39;s a list of np.arrays, not an np.array itself!</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="c1">#hdr, np.copy(data)</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">read_2D_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            
+            <span class="k">if</span><span class="p">(</span><span class="n">offset</span> <span class="o">==</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">while</span><span class="p">(</span><span class="s1">&#39;#&#39;</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">offset</span><span class="p">]):</span>
+                    <span class="n">offset</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">num_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">-</span><span class="n">offset</span>
+            <span class="n">num_cols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">offset</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">num_rows</span><span class="p">,</span> <span class="n">num_cols</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">offset</span><span class="p">:]):</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">print_sequential_MD_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">datalist</span><span class="p">,</span> <span class="n">headerMD</span><span class="o">=</span><span class="s1">&#39;#</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+        <span class="n">numsteps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">datalist</span><span class="p">)</span>
+        <span class="n">numcols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">datalist</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="n">headerMD</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">headerMD</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numsteps</span><span class="p">):</span>
+            <span class="n">header_step</span> <span class="o">=</span> <span class="s1">&#39;Direct configuration=     </span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">step</span><span class="p">)</span>
+            <span class="n">datanow</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numcols</span><span class="p">):</span>
+                <span class="n">datanow</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datalist</span><span class="p">[</span><span class="n">step</span><span class="p">,:,</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="n">snow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_to_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">datanow</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tostring</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">s</span> <span class="o">+=</span> <span class="n">header_step</span> <span class="o">+</span> <span class="n">snow</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">print_to_file_GPT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">datalist</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s1">&#39;#First line is comment line</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">tostring</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+        <span class="c1"># Check that the length of the file to print in rows is consistent for all data...</span>
+        <span class="n">length_check</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">datalist</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">length_check</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Data length of rows inconsistent!&quot;</span><span class="p">)</span>
+        <span class="c1"># Use numpy&#39;s savetxt() method to write the data to a file</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span><span class="n">datalist</span><span class="p">),</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.*e</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">precision</span><span class="p">)</span>
+
+    <span class="c1"># A wrapper for file print functions. </span>
+    <span class="c1"># datalist = [np.array1, ...]</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">print_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">datalist</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s1">&#39;#First line is comment line</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">tostring</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+        <span class="n">fopen</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">numcols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">datalist</span><span class="p">)</span>
+        <span class="n">multiplicity</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">length_check</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">datalist</span><span class="p">:</span>
+            <span class="c1"># Values</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">multiplicity</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">length_check</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+
+            <span class="c1"># Columns</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">multiplicity</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">length_check</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+
+            <span class="c1"># Matrices</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">dimrows</span><span class="p">,</span> <span class="n">dimcols</span><span class="p">)</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+                <span class="n">length_check</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dimrows</span><span class="p">)</span>
+                <span class="n">multiplicity</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dimcols</span><span class="p">)</span>
+            
+        <span class="c1"># Check that the length of the file to print in rows is consistent for all data...</span>
+        <span class="n">length_check</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">length_check</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">length_check</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">length_check</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">length_check</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data length of rows inconsistent!&quot;</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+        <span class="c1"># Usual data-&gt;string transformation :)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length_check</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datalist</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">multiplicity</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">%.*e</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">precision</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">row</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">mult</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">multiplicity</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                        <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">%.*e</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">precision</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">mult</span><span class="p">])</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        
+        <span class="c1">#print(&quot;I&#39;m here&quot;)</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">tostring</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">s</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">header</span> <span class="o">==</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">header</span><span class="p">:</span>
+                    <span class="n">header</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">header</span><span class="o">+</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">flatten_3dvecs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+        <span class="n">darray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">3</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="n">darray</span><span class="p">[</span><span class="n">ct</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">darray</span><span class="p">)</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">blow_3dvecs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+        <span class="n">darray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">darray</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="mi">3</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">darray</span><span class="p">)</span>       
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">vector_of_norms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+        <span class="n">darray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">),</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)):</span>
+            <span class="n">darray</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="n">darray</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="n">darray</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">darray</span><span class="p">)</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">floatrange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">numdiv</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">numdiv</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numdiv</span><span class="p">):</span>
+            <span class="n">vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="p">(</span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="p">)</span><span class="o">/</span><span class="n">numdiv</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">vec</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">normalize_vector_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectorset</span><span class="p">):</span>
+        <span class="n">num_vecs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vectorset</span><span class="p">)</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vectorset</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">norms</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;...j,...j&#39;</span><span class="p">,</span> <span class="n">vectorset</span><span class="p">,</span> <span class="n">vectorset</span><span class="p">))),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">newvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;...i,...&#39;</span><span class="p">,</span> <span class="n">vectorset</span><span class="p">,</span> <span class="n">norms</span><span class="p">))</span>
+    
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">newvec</span><span class="p">)</span>
+
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">normalize_vectors_MD</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">):</span>
+        <span class="n">num_steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vectors</span><span class="p">)</span>
+        <span class="n">num_vecs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vectors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vectors</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">newvecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">num_steps</span><span class="p">,</span> <span class="n">num_vecs</span><span class="p">,</span> <span class="n">dims</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_steps</span><span class="p">):</span>
+            <span class="n">newvecs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normalize_vector_set</span><span class="p">(</span><span class="n">vectors</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">newvecs</span>
+
+    <span class="c1"># Average a set of lists, possibly applying an offset to data :)</span>
+    <span class="nd">@calculate_time</span>
+    <span class="k">def</span> <span class="nf">multiaverage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">)]))</span>
+
+        <span class="k">return</span> <span class="n">output</span>
+
+<div class="viewcode-block" id="randomTools.print_timers">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.randomTools.randomTools.print_timers">[docs]</a>
+    <span class="k">def</span> <span class="nf">print_timers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">timers_dict</span><span class="p">[</span><span class="s1">&#39;Total run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">timers_dict</span><span class="p">[</span><span class="s1">&#39;Total run&#39;</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Run timers summary. Total run: </span><span class="si">%d</span><span class="s2"> secs&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">timers_dict</span><span class="p">[</span><span class="s1">&#39;Total run&#39;</span><span class="p">]))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;===================================&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">timer_name</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">timers_dict</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Function </span><span class="si">%s</span><span class="s2">: </span><span class="si">%d</span><span class="s2"> secs&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">timer_name</span><span class="p">,</span> <span class="n">timers_dict</span><span class="p">[</span><span class="n">timer_name</span><span class="p">]))</span></div>
+
+    
+<div class="viewcode-block" id="randomTools.plot">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.randomTools.randomTools.plot">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">xrange</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">yrange</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+        <span class="c1"># Assumption: each element of a is a two-item list.</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">xrange</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">xrange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">xrange</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">yrange</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="n">yrange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yrange</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">filename</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">filename</span> <span class="o">==</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="randomTools.movie_from_images">
+<a class="viewcode-back" href="../../../ctoolkit.tools.html#ctoolkit.tools.randomTools.randomTools.movie_from_images">[docs]</a>
+    <span class="k">def</span> <span class="nf">movie_from_images</span><span class="p">(</span><span class="n">image_path_list</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;output.avi&#39;</span><span class="p">,</span> <span class="n">video_length_secs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">cv2</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">image_path_list</span><span class="p">:</span>
+            <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">video_length_secs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">video_length_secs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span>
+
+        <span class="n">fps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span> <span class="o">/</span> <span class="n">video_length_secs</span>
+        <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">layers</span> <span class="o">=</span> <span class="n">frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">video</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoWriter</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">codec</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">CVideoWriter_fourcc</span><span class="p">(</span><span class="o">*</span><span class="s1">&#39;DIVX&#39;</span><span class="p">),</span> <span class="n">frames_per_second</span> <span class="o">=</span> <span class="n">fps</span><span class="p">,</span> <span class="n">frame_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+        <span class="p">[</span><span class="n">video</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span> <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">frames</span><span class="p">]</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+        <span class="n">video</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Crystal Toolkit</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2024, C. Escorihuela-Sayalero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
