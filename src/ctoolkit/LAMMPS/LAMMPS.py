@@ -76,27 +76,32 @@ class LAMMPS():
         line_starts = []
         line_ends = []
         for i, line in enumerate(lines):
-            if "   Step          Temp          Press          Cella          Cellb          Cellc          Volume         PotEng" in line:            
+            if "Step" in line:            
+                sample = line
                 line_starts.append(i+1)
             if "Loop time" in line:
                 line_ends.append(i)
 
         num_loops = len(line_starts)
     
-        step = []
-        temp = []
-        press = []
-        cell = []
-        vol = []
-        energy = []
+        # We make a generic reader using an automated dictionary
+
+        dict_output = {}
+        for element in sample.split():
+            dict_output[element] = []
+
+        data = []
         for iloop in range(num_loops):
             # Skip the first result as it's the same as the last loop last step!
             for i in range(line_starts[iloop]+1, line_ends[iloop]):
-                step.append(int(lines[i].split()[0]))
-                temp.append(float(lines[i].split()[1]))
-                press.append(float(lines[i].split()[2]))
-                cell.append(np.array(lines[i].split()[3:6], dtype=float))
-                vol.append(float(lines[i].split()[6]))
-                energy.append(float(lines[i].split()[7]))
-        return np.array(step, dtype=int), np.array(temp, dtype=float), np.array(press, dtype=float), np.array(cell,dtype=float), np.array(vol, dtype=float), np.array(energy, dtype=float)
+                d = []
+                for j, val in enumerate(lines[i].split()):
+                    dict_output[sample.split()[j]].append(float(val))
 
+        # Convert to numpy arrays the contents of the dictionary
+        for key in list(dict_output.keys()):
+            dict_output[key] = np.array(dict_output[key])
+        
+        # The keys here are thus the ones provided by LAMMPS itself
+
+        return dict_output
