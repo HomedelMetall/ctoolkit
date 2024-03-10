@@ -76,7 +76,7 @@ class LAMMPS():
         line_starts = []
         line_ends = []
         for i, line in enumerate(lines):
-            if "Step Temp Press Cella Cellb Cellc Volume PotEng" in line:
+            if "   Step          Temp          Press          Cella          Cellb          Cellc          Volume         PotEng" in line:            
                 line_starts.append(i+1)
             if "Loop time" in line:
                 line_ends.append(i)
