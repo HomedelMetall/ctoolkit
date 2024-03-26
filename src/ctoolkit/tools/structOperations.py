@@ -195,6 +195,46 @@ class structOperations:
 
         return new_VASP
 
+    def GROMACStraj_to_vasp(self, GROMACS_structure, epoch=0):
+        # Timestep here indicates the instance of GROMACS trajectory
+        # that needs to be extracted
+        new_VASP = VASP()
+        new_POSCAR = new_VASP.POSCAR
+
+        new_POSCAR.title = 'Gen. by Toolkit\n'
+        new_POSCAR.B = np.copy(GROMACS_structure.boxes[epoch])
+        new_POSCAR.a_lat = 1.0
+
+        at_species = []
+        spec_num = {}
+        for spec in GROMACS_structure.atom_names[epoch]:
+            if not spec in at_species:
+                at_species.append(spec)
+                spec_num[spec] = 1
+            else:
+                spec_num[spec] += 1
+        new_POSCAR.names = np.array(at_species, dtype=str)
+        new_POSCAR.lattype = 'Direct\n'
+        new_POSCAR.multiplicity = np.array([spec_num[spec] for spec in at_species], dtype=int)
+        new_POSCAR.at_frac = np.zeros([len(GROMACS_structure.atposfrac[epoch]), 3], dtype=float)
+        new_POSCAR.at_cart = np.zeros([len(GROMACS_structure.atposfrac[epoch]), 3], dtype=float)
+        new_POSCAR.atom_id = np.zeros([len(GROMACS_structure.atposfrac[epoch])], dtype=float)
+        new_POSCAR.namelist = []
+        ct = 0
+        for spec in at_species:
+            for at in range(len(GROMACS_structure.atposfrac[-1])):
+                if GROMACS_structure.atom_names[-1, at] == spec:
+                    new_POSCAR.at_frac[ct] = np.copy(GROMACS_structure.atposfrac[epoch, at])
+                    new_POSCAR.at_cart[ct] = np.copy(GROMACS_structure.atposcart[epoch, at])
+                    new_POSCAR.atom_id[ct] = np.copy(GROMACS_structure.index[epoch, at])
+                    new_POSCAR.namelist.append(spec)
+                    ct += 1
+
+        new_POSCAR.type = "VASP"
+
+        return new_VASP
+
+
     def GROMACS_to_vasp(self, GROMACS_structure):
         new_VASP = VASP()
         new_POSCAR = new_VASP.POSCAR
