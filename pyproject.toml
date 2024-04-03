@@ -11,7 +11,7 @@ description = "The Crystal Toolkit"
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
-    "numpy", "scipy", "matplotlib"
+    "numpy", "scipy", "matplotlib", "multiprocessing"
 ]
 dynamic = ["version"]
 
