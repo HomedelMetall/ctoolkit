@@ -82,10 +82,11 @@ class LAMMPS():
             if "Loop time" in line:
                 line_ends.append(i)
 
-        num_loops = len(line_starts)
-    
-        # We make a generic reader using an automated dictionary
+        if line_ends == []: # simulation didn't finish
+            line_ends.append(len(lines))
 
+        num_loops = len(line_starts)
+        # We make a generic reader using an automated dictionary
         dict_output = {}
         for element in sample.split():
             dict_output[element] = []
