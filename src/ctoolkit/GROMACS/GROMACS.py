@@ -1,12 +1,10 @@
 from ctoolkit.global_vars.ext_libs import *
 from ctoolkit.global_vars.decorators import *
 from ctoolkit.tools import tools
+import pickle
 class GROMACS():
     def __init__(self):
-        pass
-    
-    def __init__(self):
-        self.tools = tools()
+        self.tools = tools.tools()
         self.type = 'GROMACS'
     
     # This will read atomic positions of an MD run. Probably easy to tune it to read velocities.
@@ -75,7 +73,11 @@ class GROMACS():
                 sys.stdout.flush()
                 #gc.collect()
 
-    def read_step(self, step_id, numatoms, lines):
+    def read_step(self, step_id, numatoms, lines,
+                    _boxes, _cellA, _cellB, _cellC, 
+                    _vol, _atom_names, _index,
+                    _atposcart, _atposfrac,
+                    _atvelcart, _atvelfrac):# -> None:
         i = int(step_id+0)
         nmtoA = 10
         nmpstoAfs = 0.01
@@ -102,27 +104,54 @@ class GROMACS():
             index[at] = int(l[2])
             atom_names.append(str(re.sub(pattern, '', l[1])))
 
-        atposfrac = self.tools.cart_to_frac(boxes, atposcart)
-        atvelfrac = self.tools.cart_to_frac(boxes, atvelcart)
-
+        #atposfrac = intools.cart_to_frac(boxes, atposcart)
+        #atvelfrac = intools.cart_to_frac(boxes, atvelcart)
+        print( self.__dict__.copy())
         # Split writeout to memory so as to use a datalock
         with lock:
-            self.boxes[step_id] = boxes
-            self.cellA[step_id], self.cellB[step_id], self.cellC[step_id] = cellA, cellB, cellC
-            self.vol[step_id] = vol
-            self.atom_names[step_id] = atom_names
-            self.index[step_id] = index
-            self.atposcart[step_id] = np.array(atposcart)
-            self.atvelcart[step_id] = np.array(atvelcart)
-            self.atposfrac[step_id] = np.array(atposfrac)
-            self.atvelfrac[step_id] = np.array(atvelfrac)
+            _boxes[step_id] = boxes
+            _cellA[step_id], _cellB[step_id], _cellC[step_id] = cellA, cellB, cellC
+            _vol[step_id] = vol
+            _atom_names[step_id] = atom_names
+            _index[step_id] = index
+            _atposcart[step_id] = np.array(atposcart)
+            _atvelcart[step_id] = np.array(atvelcart)
+            #_atposfrac[step_id] = np.array(atposfrac)
+            #_atvelfrac[step_id] = np.array(atvelfrac)
+        return step_id
 
-    def init_pool_processes(self,the_lock):
-        '''Needed for the use of pool in multiprocessing"
-        '''
-        global lock
-        lock = the_lock
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        for i, st in enumerate(state):
+            if not self.is_picklable(st):
+                print("Not picklable", i, state)
+        return state
 
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
+    def test_picklability(self, obj, name="Object"):
+        try:
+            pickle.dumps(obj)
+            print(f"{name} is picklable.")
+        except (pickle.PicklingError, TypeError) as e:
+            print(f"{name} is NOT picklable. Reason: {e}")
+
+    def check_instance_picklability(self, instance):
+        for attr_name in dir(instance):
+            # Filter out special and private attributes
+            if not attr_name.startswith("__"):
+                attr = getattr(instance, attr_name)
+                self.test_picklability(attr, name=attr_name)
+    
+    def is_picklable(self, obj):
+        try:
+            pickle.dumps(obj)
+            return True
+        except (pickle.PicklingError, TypeError):
+            return False
+
+    @calculate_time
     def read_gro_trajectory_parallel(self, filename):
         with open(filename, 'r') as f:
             # Original GROMACS units are nm, ps, C, K, kJ/mol, bar, nm/ps
@@ -131,70 +160,100 @@ class GROMACS():
             lines = f.readlines()
             numatoms = int(lines[1].split()[0])
             numsteps = int(len(lines)/(numatoms+3))
-            """
-            self.atposcart = np.zeros([numsteps,numatoms,3], dtype=float)
-            self.atposfrac = np.zeros([numsteps,numatoms,3], dtype=float)
-            self.atvelcart = np.zeros([numsteps,numatoms,3], dtype=float)
-            self.atvelfrac = np.zeros([numsteps,numatoms,3], dtype=float)
-            self.index = np.zeros([numsteps, numatoms], dtype=int)
-            self.atom_names = np.zeros([numsteps, numatoms], dtype=str)
-            self.boxes = np.zeros([numsteps, 3, 3], dtype=float)
-            self.cellA = np.zeros([numsteps], dtype=float)
-            self.cellB = np.zeros([numsteps], dtype=float)
-            self.cellC = np.zeros([numsteps], dtype=float)
-            self.vol = np.zeros([numsteps], dtype=float)
-            """
+            
             print("Steps to be read:", numsteps)
 
-            import multiprocessing as mp
-            m = mp.Manager()
-            lock = mp.Lock()
+        with self.tools.parallel_manager() as m:
+            boxes = m.list([0]*numsteps)
+            cellA, cellB, cellC = m.list([.0]*numsteps), m.list([.0]*numsteps), m.list([.0]*numsteps)
+            vol = m.list([.0]*numsteps)
+            atom_names = m.list([''*numatoms]*numsteps)
+            index = m.list([0]*numsteps)
+            atposfrac = m.list([0]*numsteps)
+            atvelfrac = m.list([0]*numsteps)
+            atposcart = m.list([0]*numsteps)
+            atvelcart = m.list([0]*numsteps)
             
-            self.boxes = m.list([0]*numsteps)
-            self.cellA, self.cellB, self.cellC = m.list([.0]*numsteps), m.list([.0]*numsteps), m.list([.0]*numsteps)
-            self.vol = m.list([.0]*numsteps)
-            self.atom_names = m.list([''*numatoms]*numsteps)
-            self.index = m.list([0]*numsteps)
-            self.atposfrac = m.list([0]*numsteps)
-            self.atvelfrac = m.list([0]*numsteps)
-            self.atposcart = m.list([0]*numsteps)
-            self.atvelcart = m.list([0]*numsteps)
-
-            threads = [multiprocessing.Process(target=self.read_step, args=(step_id, numatoms, lines))
-                       for step_id in range(numsteps-1, -1, -1)]
-
-            targs = [(step_id, numatoms, lines) for step_id in range(numsteps)]
-            p = mp.Pool(initializer=self.init_pool_processes, initargs=(lock,))
-            p.starmap(self.read_step, targs)
-
-
-            """
-            ncpu = 8
-            for i in range(int(numsteps/ncpu)):
-                for x in threads[i*ncpu:(i+1)*ncpu]:
-                    x.start()
-
-                for x in threads[i*ncpu:(i+1)*ncpu]:
-                    x.join()
-                #sys.stdout.write("%d/%d...\r" % (i, int(numsteps/ncpu)))
-                #sys.stdout.flush()
-            # Remaining steps
-            for i in range(numsteps%ncpu):
-                ic = i + int(numsteps/ncpu)
-                for x in threads[ic*ncpu:(ic+1)*ncpu]:
-                    x.start()
-                for x in threads[ic*ncpu:(ic+1)*ncpu]:
-                    x.join()
+            # PARALLEL RUN
+            global lock
+            lock = self.tools.get_lock()
+            pool = self.tools.create_pool(lock)
+            targs = [(step_id, numatoms, lines, boxes, cellA, cellB, cellC,
+                    vol, atom_names, index,
+                    atposcart, atposfrac,
+                    atvelcart, atvelfrac, ) for step_id in range(numsteps)]
+           
+            res = self.tools.run_parallel(read_step, targs, chksz=30, pool=pool)
+            self.tools.close_pool(pool)
             
-            """
 
-            self.boxes = np.array(self.boxes)
-            self.cellA, self.cellB, self.cellC = np.array(self.cellA), np.array(self.cellB), np.array(self.cellC)
-            self.vol = np.array(self.vol)
-            self.atom_names = np.array(self.atom_names, dtype=str)
-            self.index = np.array(self.index, dtype=int)
-            self.atposfrac = np.array(self.atposfrac)
-            self.atposcart = np.array(self.atposcart)
-            self.atvelcart = np.array(self.atvelcart)
-            self.atvelfrac = np.array(self.atvelfrac)
-            #print(self.boxes)i
+            self.boxes = np.array(boxes)
+            self.cellA, self.cellB, self.cellC = np.array(cellA), np.array(cellB), np.array(cellC)
+            self.vol = np.array(vol)
+            self.atom_names = np.array(atom_names, dtype=str)
+            self.index = np.array(index, dtype=int)
+            self.atposcart = np.array(atposcart)
+            self.atvelcart = np.array(atvelcart)
+
+            self.atposfrac = np.copy(self.atposcart)
+            self.atvelfrac = np.copy(self.atvelcart)
+           
+            for i in range(len(self.atposcart)):
+                self.atposfrac[i] = self.tools.cart_to_frac(self.boxes[i], self.atposcart[i])
+                self.atvelfrac[i] = self.tools.cart_to_frac(self.boxes[i], self.atvelcart[i])
+
+## PARALLEL SECTION ##
+# When you're coding your thing and calling ctoolkit
+# to instantiate a parallel job, all is smooth.
+# However, from inside, it is very difficult
+# to establish the notion of SELF.
+# So if we try to create looping functions
+# using self. methods, multiprocessing gets
+# crazy because can't pickle the objects.
+
+# INSTEAD.
+
+# We do it here.
+# We do it nasty.
+# We do it *OUTSIDE*
+def read_step(step_id, numatoms, lines,
+                    _boxes, _cellA, _cellB, _cellC,
+                    _vol, _atom_names, _index,
+                    _atposcart, _atposfrac,
+                    _atvelcart, _atvelfrac) -> None:
+    i = int(step_id+0)
+    nmtoA = 10
+    nmpstoAfs = 0.01
+    bl = np.array([float(x) for x in lines[(numatoms+3)*(i+1) - 1].split()])
+
+    boxes = np.transpose(np.array([[bl[0], bl[3], bl[4]],
+                           [bl[6], bl[1], bl[5]],
+                           [bl[7], bl[8], bl[2]]], dtype=float))*nmtoA
+
+    cellA = np.sqrt(np.dot(boxes[:,0], boxes[:,0]))
+    cellB = np.sqrt(np.dot(boxes[:,1], boxes[:,1]))
+    cellC = np.sqrt(np.dot(boxes[:,2], boxes[:,2]))
+    vol = np.linalg.det(boxes)
+
+    atposcart = np.zeros([numatoms, 3], dtype=float)
+    atvelcart = np.zeros([numatoms, 3], dtype=float)
+    index = np.zeros([numatoms], dtype=float)
+    atom_names = ['']*numatoms#np.zeros([numatoms], dtype=str)
+    pattern = r'[0-9]'
+    for at in range(numatoms):
+        l = lines[2+at + (numatoms+3)*i].split()
+        atposcart[at,:] = np.array([float(x) for x in l[3:6]], dtype=float)*nmtoA
+        atvelcart[at,:] = np.array([float(x) for x in l[6:9]], dtype=float)*nmpstoAfs
+        index[at] = int(l[2])
+        atom_names[at] = re.sub(r'\d.*', '', l[1])
+
+    # Split writeout to memory so as to use a datalock
+    with lock:
+        _boxes[step_id] = boxes
+        _cellA[step_id], _cellB[step_id], _cellC[step_id] = cellA, cellB, cellC
+        _vol[step_id] = vol
+        _atom_names[step_id] = atom_names
+        _index[step_id] = index
+        _atposcart[step_id] = np.array(atposcart)
+        _atvelcart[step_id] = np.array(atvelcart)
+

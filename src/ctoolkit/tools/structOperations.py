@@ -2,6 +2,7 @@ from ctoolkit.global_vars.ext_libs import *
 from ctoolkit.global_vars.tk_lib_VASP import *
 from ctoolkit.global_vars.tk_lib_SCALEUP import *
 from ctoolkit.global_vars.tk_lib_XYZ import *
+from ctoolkit.global_vars.tk_lib_GROMACS import *
 class structOperations:
     @calculate_time
     def copy_structure_vasp(self, structure):

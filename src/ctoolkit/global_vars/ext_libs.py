@@ -1,7 +1,7 @@
 import sys
 import os
 import numpy as np
-import multiprocessing
+import multiprocessing as mp
 import re
 import time
 # Scipy is so slow to load,

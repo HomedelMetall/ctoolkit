@@ -1,5 +1,5 @@
 from ctoolkit.global_vars.ext_libs import *
-import multiprocessing as mp
+#import multiprocessing as mp
 
 # Timers may not be properly displayed for everything that happens
 # behind the scenes of the parallel processing here. For instance,
@@ -9,14 +9,14 @@ import multiprocessing as mp
 # it seems a bit too much just to measure the cost of initializing
 # some data locks...
 class parallelSuite:
-    @calculate_time
     def parallel_manager(self):
-        self.pmanager = mp.Manager()
-        self.pool = self.create_pool(self.get_lock())
+        self.pmanager = mp.get_context().Manager()
+        lock = self.get_lock()
+        self.pool = self.create_pool(lock)
         return self.pmanager
 
     def get_lock(self):
-        self.mpLock = mp.Lock()
+        self.mpLock = self.pmanager.Lock()
         return self.mpLock
     
     def mplist(self, shape=None):
@@ -28,18 +28,17 @@ class parallelSuite:
         else:
             return self.pmanager.list(shape)
     
-    @calculate_time
     def create_pool(self, data_lock):
-        return mp.Pool(initializer=self.init_pool_processes,
-                       initargs=(data_lock, ))
+        if self.pmanager == None:
+            print("Can't create a pool without a context manager.")
+            return None
+        return mp.Pool(initializer=self.init_pool_processes, initargs=(data_lock, ),)
 
-    @calculate_time
     def init_pool_processes(self, the_lock):
         # Init the global locks
         global mpLock
         mpLock = the_lock
 
-    @calculate_time
     def close_pool(self, pool):
         pool.close()
 
@@ -97,11 +96,9 @@ class parallelSuite:
         #
         #   with lock:
         #       shared_array.append(whatever_data)
-
-
+        
         result = self.pool.starmap_async(func, iter_args, chunksize=chksz)
         result.wait()
-        
         # Shape of AsyncResult Objects is ugly.
         # So we turn it into a nicer, more handable list object
         nice_result = []

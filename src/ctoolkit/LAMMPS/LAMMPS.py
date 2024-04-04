@@ -4,10 +4,9 @@ from ctoolkit.tools import tools
 
 # Class to manage LAMMPS file i/o
 class LAMMPS():
-    # Initialijze
+    # Initialize
     def __init__(self):
         self.tools = tools.tools()
-        pass
 
     # This will read atomic positions of an MD run. Probably easy to tune it to read velocities.
     @calculate_time
