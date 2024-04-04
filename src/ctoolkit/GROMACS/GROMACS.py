@@ -73,53 +73,6 @@ class GROMACS():
                 sys.stdout.flush()
                 #gc.collect()
 
-    def read_step(self, step_id, numatoms, lines,
-                    _boxes, _cellA, _cellB, _cellC, 
-                    _vol, _atom_names, _index,
-                    _atposcart, _atposfrac,
-                    _atvelcart, _atvelfrac):# -> None:
-        i = int(step_id+0)
-        nmtoA = 10
-        nmpstoAfs = 0.01
-        bl = np.array([float(x) for x in lines[(numatoms+3)*(i+1) - 1].split()])
-
-        boxes = np.transpose(np.array([[bl[0], bl[3], bl[4]],
-                                [bl[6], bl[1], bl[5]],
-                                [bl[7], bl[8], bl[2]]], dtype=float))*nmtoA
-
-        cellA = np.sqrt(np.dot(boxes[:,0], boxes[:,0]))
-        cellB = np.sqrt(np.dot(boxes[:,1], boxes[:,1]))
-        cellC = np.sqrt(np.dot(boxes[:,2], boxes[:,2]))
-        vol = np.linalg.det(boxes)
-
-        atposcart = np.zeros([numatoms, 3], dtype=float)
-        atvelcart = np.zeros([numatoms, 3], dtype=float)
-        index = np.zeros([numatoms], dtype=float)
-        atom_names = []#np.zeros([numatoms], dtype=str)
-        pattern = r'[0-9]'
-        for at in range(numatoms):
-            l = lines[2+at + (numatoms+3)*i].split() 
-            atposcart[at,:] = np.array([float(x) for x in l[3:6]], dtype=float)*nmtoA
-            atvelcart[at,:] = np.array([float(x) for x in l[6:9]], dtype=float)*nmpstoAfs
-            index[at] = int(l[2])
-            atom_names.append(str(re.sub(pattern, '', l[1])))
-
-        #atposfrac = intools.cart_to_frac(boxes, atposcart)
-        #atvelfrac = intools.cart_to_frac(boxes, atvelcart)
-        print( self.__dict__.copy())
-        # Split writeout to memory so as to use a datalock
-        with lock:
-            _boxes[step_id] = boxes
-            _cellA[step_id], _cellB[step_id], _cellC[step_id] = cellA, cellB, cellC
-            _vol[step_id] = vol
-            _atom_names[step_id] = atom_names
-            _index[step_id] = index
-            _atposcart[step_id] = np.array(atposcart)
-            _atvelcart[step_id] = np.array(atvelcart)
-            #_atposfrac[step_id] = np.array(atposfrac)
-            #_atvelfrac[step_id] = np.array(atvelfrac)
-        return step_id
-
     def __getstate__(self):
         state = self.__dict__.copy()
         for i, st in enumerate(state):
@@ -201,6 +154,8 @@ class GROMACS():
             for i in range(len(self.atposcart)):
                 self.atposfrac[i] = self.tools.cart_to_frac(self.boxes[i], self.atposcart[i])
                 self.atvelfrac[i] = self.tools.cart_to_frac(self.boxes[i], self.atvelcart[i])
+
+            del lines
 
 ## PARALLEL SECTION ##
 # When you're coding your thing and calling ctoolkit
